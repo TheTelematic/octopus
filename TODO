@@ -1,0 +1,3 @@
+init.hpp:
+
+    [PENDIENTE] Una funcion que le pases la IP, la NETMASK, el GATEWAY y el DNS en formato string y te devuelva un tipo new_configIPv4_t
