@@ -10,59 +10,47 @@
 #include "types.hpp"
 
 
-//Librerias ajenas a IncludeOS
-#include <iostream>
-
-
-using namespace std;
 
 //Librerias de IncludeOS
 #include <net/inet4>
+#include <iostream>
 
-
+using namespace std;
 
 namespace octopus{
-    /*
-        Template to init new_configIPv4_t:
 
-            nw->ip[0] = 10;
-            nw->ip[1] = 0;
-            nw->ip[2] = 0;
-            nw->ip[3] = 2;
+    new_configIPv4_t* defaultNetConfig(){
+        static new_configIPv4_t* DEFAULT_CONFIG = new new_configIPv4_t;
 
-            nw->netmask[0] = 255;
-            nw->netmask[1] = 255;
-            nw->netmask[2] = 255;
-            nw->netmask[3] = 0;
 
-            nw->gateway[0] = 10;
-            nw->gateway[1] = 0;
-            nw->gateway[2] = 0;
-            nw->gateway[3] = 1;
+        DEFAULT_CONFIG->ip[0] = 10;
+        DEFAULT_CONFIG->ip[1] = 0;
+        DEFAULT_CONFIG->ip[2] = 0;
+        DEFAULT_CONFIG->ip[3] = 2;
 
-            nw->dns[0] = 8;
-            nw->dns[1] = 8;
-            nw->dns[2] = 8;
-            nw->dns[3] = 8;
+        DEFAULT_CONFIG->netmask[0] = 255;
+        DEFAULT_CONFIG->netmask[1] = 255;
+        DEFAULT_CONFIG->netmask[2] = 255;
+        DEFAULT_CONFIG->netmask[3] = 0;
 
-    */
-    void change_IPconfig(new_configIPv4_t* nw){
-        // Static IP configuration will get overwritten by DHCP, if found
-        auto& inet = net::Inet4::ifconfig<0>(10);
-        inet.network_config({ nw->ip[0],         nw->ip[1],       nw->ip[2],       nw->ip[3] },         // IP
-                            { nw->netmask[0],    nw->netmask[1],  nw->netmask[2],  nw->netmask[3] },    // Netmask
-                            { nw->gateway[0],    nw->gateway[1],  nw->gateway[2],  nw->gateway[3] },    // Gateway
-                            { nw->dns[0],        nw->dns[1],      nw->dns[2],      nw->dns[3] });       // DNS
+        DEFAULT_CONFIG->gateway[0] = 10;
+        DEFAULT_CONFIG->gateway[1] = 0;
+        DEFAULT_CONFIG->gateway[2] = 0;
+        DEFAULT_CONFIG->gateway[3] = 1;
+
+        DEFAULT_CONFIG->dns[0] = 8;
+        DEFAULT_CONFIG->dns[1] = 8;
+        DEFAULT_CONFIG->dns[2] = 8;
+        DEFAULT_CONFIG->dns[3] = 8;
+
+        return DEFAULT_CONFIG;
     }
 
-    void init_TCP(const std::string& args){
-
-        cout << "Initialized!" << endl;
-        cout << "Your args: " << args.c_str() << endl;
 
 
 
-    }
+    //TODO: Una funcion que le pases la IP, la NETMASK, el GATEWAY y el DNS en formato string y te devuelva un tipo new_configIPv4_t
+
 }
 
 

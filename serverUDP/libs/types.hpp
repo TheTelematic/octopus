@@ -1,5 +1,7 @@
-#ifndef __INIT__D
-#define __INIT__D
+#ifndef __TYPES__D
+#define __TYPES__D
+
+#include <os>
 
 namespace octopus{
 
@@ -15,6 +17,7 @@ namespace octopus{
             dnsv4_t dns;
     };
 
+    typedef net::tcp::Listener server_t;
 }
 
 
