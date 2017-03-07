@@ -33,6 +33,7 @@ namespace octopus{
     class octoNet{
     protected:
         net::Inet<net::IP4> *inet;
+        IP4::addr ip;
 
     public:
         //Realmente este constructor sirve de algo?
@@ -60,6 +61,18 @@ namespace octopus{
 
 
         }
+
+        //TODO: Devuelve la ip en formato string
+        std::String getIPs(){
+
+        }
+
+        //TODO: Devuelve la direccion de broadcast en formato IP4::addr
+        IP4::addr getBROADCAST(){
+
+        }
+
+
 
         octoNet(){
             auto& tmp = net::Inet4::ifconfig<0>(10);
