@@ -38,14 +38,18 @@ namespace octopus{
 
             server->on_connect(
             [tmp] (Connection_ptr client) {
-              printf("Connected [Client]: %s\n", client->to_string().c_str());
+                  printf("Connected [Client]: %s\n", client->to_string().c_str());
 
-              client->on_read(1024, [client](auto buf, size_t n) {
-                  std::string data{ (char*)buf.get(), n };
+                  client->on_read(1024, [client](auto buf, size_t n) {
+                      std::string data{ (char*)buf.get(), n };
 
 
-                  client->write(data + "#");
-                });
+                      client->write(data + "#");
+                  });
+
+                  client->on_disconnect([client](Connection_ptr, Disconnect reason) {
+                      printf("Disconnected [Client]: %s\n", reason.to_string().c_str());
+                  });
 
             });
 

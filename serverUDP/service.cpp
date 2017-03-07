@@ -38,7 +38,7 @@ void Service::start(/*const std::string& args*/){
     server.connect();
 
 
-    cout << "Test complete!" << endl;
+    cout << "Test start now!" << endl;
 
 
 }

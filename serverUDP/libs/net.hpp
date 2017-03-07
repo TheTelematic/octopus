@@ -39,26 +39,36 @@ namespace octopus{
         octoNet(new_configIPv4_t* nw){
             // Static IP configuration will get overwritten by DHCP, if found
             auto& tmp = net::Inet4::ifconfig<0>(10);
-            tmp.network_config({ nw->ip[0],         nw->ip[1],       nw->ip[2],       nw->ip[3] },         // IP
+
+            inet = &tmp;
+
+            inet->network_config({ nw->ip[0],         nw->ip[1],       nw->ip[2],       nw->ip[3] },         // IP
                                 { nw->netmask[0],    nw->netmask[1],  nw->netmask[2],  nw->netmask[3] },    // Netmask
                                 { nw->gateway[0],    nw->gateway[1],  nw->gateway[2],  nw->gateway[3] },    // Gateway
                                 { nw->dns[0],        nw->dns[1],      nw->dns[2],      nw->dns[3] });       // DNS
 
-            inet = &tmp;
+
 
         }
 
         void changeNetConfig(new_configIPv4_t* nw){
-            auto& tmp = net::Inet4::ifconfig<0>(10);
-            tmp.network_config({ nw->ip[0],         nw->ip[1],       nw->ip[2],       nw->ip[3] },         // IP
+            if(inet == NULL){
+                auto& tmp = net::Inet4::ifconfig<0>(10);
+
+                inet = &tmp;
+            }
+
+            inet->network_config({ nw->ip[0],         nw->ip[1],       nw->ip[2],       nw->ip[3] },         // IP
                                 { nw->netmask[0],    nw->netmask[1],  nw->netmask[2],  nw->netmask[3] },    // Netmask
                                 { nw->gateway[0],    nw->gateway[1],  nw->gateway[2],  nw->gateway[3] },    // Gateway
                                 { nw->dns[0],        nw->dns[1],      nw->dns[2],      nw->dns[3] });       // DNS
 
-            inet = &tmp;
+
         }
 
-        octoNet(){}
+        octoNet(){
+            inet = NULL;
+        }
         ~octoNet(){}
     };
 
