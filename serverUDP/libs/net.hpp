@@ -52,11 +52,6 @@ namespace octopus{
         }
 
         void changeNetConfig(new_configIPv4_t* nw){
-            if(inet == NULL){
-                auto& tmp = net::Inet4::ifconfig<0>(10);
-
-                inet = &tmp;
-            }
 
             inet->network_config({ nw->ip[0],         nw->ip[1],       nw->ip[2],       nw->ip[3] },         // IP
                                 { nw->netmask[0],    nw->netmask[1],  nw->netmask[2],  nw->netmask[3] },    // Netmask
@@ -67,7 +62,9 @@ namespace octopus{
         }
 
         octoNet(){
-            inet = NULL;
+            auto& tmp = net::Inet4::ifconfig<0>(10);
+
+            inet = &tmp;
         }
         ~octoNet(){}
     };

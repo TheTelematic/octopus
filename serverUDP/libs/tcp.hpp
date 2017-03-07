@@ -17,12 +17,12 @@ namespace octopus{
 
     class octoTCPserver : public octoNet{
     private:
-        server_t* server;
+        TCPserver_t* server;
 
     public:
-        octoTCPserver (uint16_t port = 5050, new_configIPv4_t* nw = defaultNetConfig()){
+        octoTCPserver (uint16_t port = 5050, new_configIPv4_t* nw = defaultNetConfig()) : octoNet(nw){
 
-            this->changeNetConfig(nw);
+            //this->changeNetConfig(nw);
 
             auto& tmp = this->inet->tcp().bind(port);
 

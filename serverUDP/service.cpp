@@ -22,7 +22,7 @@
 
 
 //Mis Librerias
-#include "libs/tcp.hpp"
+#include "libs/udp.hpp"
 
 using namespace std;
 using namespace octopus;
@@ -33,9 +33,9 @@ void Service::start(/*const std::string& args*/){
 
 
 
-    octoTCPserver server;
+    octoUDPserver server;
 
-    server.connect();
+    //server.connect();
 
 
     cout << "Test start now!" << endl;

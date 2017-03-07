@@ -1,0 +1,12 @@
+
+
+
+ServerUDP:
+
+    Discover:
+        Port -> 5085
+
+
+    Protocol P/S:
+        Publisher Port -> 5065
+        Suscriber Port -> 5075

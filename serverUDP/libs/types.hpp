@@ -17,7 +17,8 @@ namespace octopus{
             dnsv4_t dns;
     };
 
-    typedef net::tcp::Listener server_t;
+    typedef net::tcp::Listener TCPserver_t;
+    typedef net::UDPSocket UDPserver_t;
 }
 
 
