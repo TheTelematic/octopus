@@ -78,10 +78,10 @@ namespace octopus{
         //Devuelve la direccion de broadcast en formato IP4::addr
         void getBROADCAST(broadcast_t &br){
 
-            br[0] = my_config->ip[0] | (!my_config->netmask[0]);
-            br[1] = my_config->ip[1] | (!my_config->netmask[1]);
-            br[2] = my_config->ip[2] | (!my_config->netmask[2]);
-            br[3] = my_config->ip[3] | (!my_config->netmask[3]);
+            br[0] = my_config->ip[0] | (0xFF - my_config->netmask[0]);
+            br[1] = my_config->ip[1] | (0xFF - my_config->netmask[1]);
+            br[2] = my_config->ip[2] | (0xFF - my_config->netmask[2]);
+            br[3] = my_config->ip[3] | (0xFF - my_config->netmask[3]);
 
         }
 
