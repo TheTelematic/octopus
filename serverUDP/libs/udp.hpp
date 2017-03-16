@@ -10,6 +10,7 @@
 //Mis Librerias
 #include "net.hpp"
 #include "init.hpp"
+#include "constans.hpp"
 
 
 namespace octopus{
@@ -42,20 +43,20 @@ namespace octopus{
 
             trumpetServer();
 
-            discoverSock.on_read(
-              [&sock](
-                UDP::addr_t addr,
-                UDP::port_t port,
+            UDPserver_t* tmp = discoverSock;
+
+            discoverSock->on_read(
+              [tmp](
+                net::UDP::addr_t addr,
+                net::UDP::port_t port,
                 const char* data,
                 size_t len
               )
               {
                  std::string strdata(data, len);
-                 CHECK(1, "Getting UDP data from %s:  %d -> %s",
-                       addr.str().c_str(), port, strdata.c_str());
+                 CHECK(1, "Getting UDP data from %s:  %d -> %s", addr.str().c_str(), port, strdata.c_str());
                }
-
-
+           );
         }
 
 
@@ -71,12 +72,15 @@ namespace octopus{
 
         void trumpetServer(){
 
-            auto myIP = this->getIP();
-            auto broadcast = this->getBROADCAST();
+            IPv4_t myIP;
+            this->getIP(myIP);
 
-            size_t myIP_l = std::strlen(myIP);
+            broadcast_t broadcast;
+            this->getBROADCAST(broadcast);
 
-            discoverSock->sendto(broadcast, DISCOVER_PORT, myIP, myIP_l);
+            size_t myIP_l = sizeof(myIP);
+
+            discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, myIP, myIP_l);
         }
 
     };
