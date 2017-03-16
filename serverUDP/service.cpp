@@ -45,7 +45,7 @@ void Service::start(const std::string& args){
 
     octoUDPserver server(networkconfig);
 
-    //server.connect();
+    server.run();
 
 
     cout << "Test start now!" << endl;
