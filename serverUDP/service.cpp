@@ -23,17 +23,27 @@
 
 //Mis Librerias
 #include "libs/udp.hpp"
+#include "libs/init.hpp"
 
 using namespace std;
 using namespace octopus;
 
 
 
-void Service::start(/*const std::string& args*/){
+void Service::start(const std::string& args){
 
+    //cout << "-----!!!!!!! args: " << args << endl;
 
+    auto parameters = parseArgs(args);
 
-    octoUDPserver server;
+    std::string dns     = parameters.top().c_str(); parameters.pop();
+    std::string gateway = parameters.top().c_str(); parameters.pop();
+    std::string netmask = parameters.top().c_str(); parameters.pop();
+    std::string ip      = parameters.top().c_str(); parameters.pop();
+
+    auto* networkconfig = formatStringConfig(ip.c_str(), netmask.c_str(), gateway.c_str(), dns.c_str());
+
+    octoUDPserver server(networkconfig);
 
     //server.connect();
 
