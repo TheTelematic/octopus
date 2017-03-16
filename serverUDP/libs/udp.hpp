@@ -53,8 +53,11 @@ namespace octopus{
                 size_t len
               )
               {
+                 std::cout << "Nuevo descubrimiento!" << std::endl;
                  std::string strdata(data, len);
                  CHECK(1, "Getting UDP data from %s:  %d -> %s", addr.str().c_str(), port, strdata.c_str());
+
+                 //this->trumpetServer();
                }
            );
         }
@@ -79,6 +82,8 @@ namespace octopus{
             this->getBROADCAST(broadcast);
 
             size_t myIP_l = sizeof(myIP);
+
+            printf("Enviando descubrimiento a la direccion: %d.%d.%d.%d\n", broadcast[0], broadcast[1], broadcast[2], broadcast[3]);
 
             discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, myIP, myIP_l);
         }
