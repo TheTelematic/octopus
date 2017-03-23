@@ -6,3 +6,8 @@
         Ver por que no funciona mandar los mensaje por BROADCAST, según he investigado en el repo de GitHub,
         cambiaron el puerto de broadcast en udp (es que hay un puerto solo para eso? no puede ser el que yo quiera?).
         Tambien he visto que por lo visto hay que configurar el socket para que acepte broadcast.
+
+23/3/17
+
+    Creo que hacerlo con clases no es una buena idea, porque al ser todo mediante funciones abstractas de callback,
+    no se puede usar por ejemplo "this"
