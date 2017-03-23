@@ -1,4 +1,9 @@
 init.hpp:
 
-    [HECHO] Una funcion que le pases la IP, la NETMASK, el GATEWAY y el DNS en formato string y te devuelva un tipo new_configIPv4_t
-    [HECHO] Pasarle la IP como argumento al lanzarlo
+    [HECHO]	Una funcion que le pases la IP, la NETMASK, el GATEWAY y el DNS en formato string y te devuelva un tipo new_configIPv4_t
+    [HECHO]	Pasarle la IP como argumento al lanzarlo
+    
+
+
+Sin localizar:
+	[PENDIENTE]	No hacerlo por Object-oriented, debido a que son por funciones abstractas aqui no es viable esta solucion.
