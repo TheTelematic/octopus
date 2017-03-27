@@ -11,3 +11,11 @@
 
     Creo que hacerlo con clases no es una buena idea, porque al ser todo mediante funciones abstractas de callback,
     no se puede usar por ejemplo "this"
+
+27/03/17
+
+    He empezado a reestucturar el codigo, es una buena idea, por lo menos ahora que no hay mucho codigo aun.
+    Sigo sin poder comunicar dos servicios entre si, no se si es por los puentes que crea que no los comunica,
+    si es que debe de haber de por medio algun tipo de proceso "router" o no se. Sigo investigando el por qué.
+    Lo he preguntado en el chat de IncludeOS en gitter.im pero creo que pasaran de mi por mi novatez.
+    Tengo que averiguar por que no funciona, una vez se comuniquen todo será más facil(al menos eso espero)
