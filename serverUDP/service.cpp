@@ -22,17 +22,16 @@
 
 
 //Mis Librerias
-#include "libs/udp.hpp"
-#include "libs/init.hpp"
+#include "../libs/udp.hpp"
+#include "../libs/init.hpp"
 
 using namespace std;
 using namespace octopus;
 
 
-
 void Service::start(const std::string& args){
 
-    //cout << "-----!!!!!!! args: " << args << endl;
+    // Inicializar el sistema -- S00
 
     auto parameters = parseArgs(args);
 
@@ -45,8 +44,38 @@ void Service::start(const std::string& args){
 
     octoUDPserver server(networkconfig);
 
-    server.run();
+    // End S00
 
+    //Configurar comportamiento -- S01
+
+    auto* ds = server.getDS();
+
+    ds->on_read(
+        [ds](
+          net::UDP::addr_t addr,
+          net::UDP::port_t port,
+          const char* data,
+          size_t len
+        ){
+           std::cout << "New discovery!" << std::endl;
+
+           std::string strdata(data, len);
+
+           CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
+
+           ds->sendto(addr, port, "hi!", 4);
+       }
+       //this->trumpetServer();
+   );
+
+
+    // End S01
+
+    // Trumpet the server -- S02
+
+    server.trumpetServer();
+
+    // End S02
 
     cout << "Test start now!" << endl;
 
