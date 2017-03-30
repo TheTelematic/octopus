@@ -19,3 +19,9 @@
     si es que debe de haber de por medio algun tipo de proceso "router" o no se. Sigo investigando el por qué.
     Lo he preguntado en el chat de IncludeOS en gitter.im pero creo que pasaran de mi por mi novatez.
     Tengo que averiguar por que no funciona, una vez se comuniquen todo será más facil(al menos eso espero)
+
+30/03/17
+
+    Bueno he conseguido, gracias a la ayuda de la gente de IncludeOS en su chat, que tengo que lanzar los servicios
+    con Qemu, ahora ya por lo menos le da IP por DHCP, eso es bueno, aunque le da la misma IP.
+    Tal y como está ahora hecho falla al lanzar dos servicios ya que dice que la interfaz tap está ocupada.
