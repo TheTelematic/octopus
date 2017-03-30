@@ -28,27 +28,20 @@
 using namespace std;
 using namespace octopus;
 
+octoUDPserver* server = NULL;
 
-void Service::start(const std::string& args){
+
+void Service::start(){
 
     // Inicializar el sistema -- S00
 
-    auto parameters = parseArgs(args);
-
-    std::string dns     = parameters.top().c_str(); parameters.pop();
-    std::string gateway = parameters.top().c_str(); parameters.pop();
-    std::string netmask = parameters.top().c_str(); parameters.pop();
-    std::string ip      = parameters.top().c_str(); parameters.pop();
-
-    auto* networkconfig = formatStringConfig(ip.c_str(), netmask.c_str(), gateway.c_str(), dns.c_str());
-
-    octoUDPserver server(networkconfig);
+    server = new octoUDPserver();
 
     // End S00
 
     //Configurar comportamiento -- S01
 
-    auto* ds = server.getDS();
+    auto* ds = server->getDS();
 
     ds->on_read(
         [ds](
@@ -63,17 +56,17 @@ void Service::start(const std::string& args){
 
            CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
 
-           ds->sendto(addr, port, "hi!", 4);
+           server->announceServer();
        }
-       //this->trumpetServer();
+
    );
 
 
     // End S01
 
-    // Trumpet the server -- S02
+    // Announce the server -- S02
 
-    server.trumpetServer();
+    server->announceServer();
 
     // End S02
 

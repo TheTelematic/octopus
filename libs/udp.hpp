@@ -18,9 +18,27 @@ namespace octopus{
     class octoUDPserver : public octoNet{
 
     public:
-        octoUDPserver (new_configIPv4_t* nw = defaultNetConfig()) : octoNet(nw){
+        /*octoUDPserver (new_configIPv4_t* nw = defaultNetConfig()) : octoNet(nw){
 
-            //this->changeNetConfig(nw);
+
+            auto& tmp = this->inet->udp().bind(DISCOVER_PORT);
+
+            discoverSock = &tmp;
+            printf("Server listening on discover port %d \n", DISCOVER_PORT);
+
+            auto& tmp2 = this->inet->udp().bind(PUBLISHER_PORT);
+
+            publisherSock = &tmp2;
+            printf("Server listening on publisher port %d \n", PUBLISHER_PORT);
+
+            auto& tmp3 = this->inet->udp().bind(SUSCRIBER_PORT);
+
+            suscriberSock = &tmp3;
+            printf("Server listening on suscriber port %d \n", SUSCRIBER_PORT);
+
+        }*/
+
+        octoUDPserver () : octoNet(){
 
             auto& tmp = this->inet->udp().bind(DISCOVER_PORT);
 
@@ -40,8 +58,7 @@ namespace octopus{
         }
 
 
-
-        void trumpetServer(){
+        void announceServer(){
 
             IPv4_t myIP;
             this->getIP(myIP);
