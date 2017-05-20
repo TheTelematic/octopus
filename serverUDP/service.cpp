@@ -17,13 +17,13 @@
 
 //Librerias de IncludeOS
 #include <os>
-#include <iostream>
-
+#include <util/timer.hpp>
 
 
 //Mis Librerias
 #include "../libs/udp.hpp"
 #include "../libs/init.hpp"
+
 
 using namespace std;
 using namespace octopus;
@@ -62,13 +62,26 @@ void Service::start(){
    );
 
 
-    // End S01
-
+    // ---------------------------------------End S01
+/*
     // Announce the server -- S02
 
     server->announceServer();
 
-    // End S02
+    // ---------------------------------------End S02
+*/
+    // Configure timers -- S03
+    Timer t;
+
+    t.start(1s, []{
+        server->announceServer();
+    });
+
+    if(t.is_running()){
+        cout << "TIMER CORRIENDO\n";
+    }
+
+    // ---------------------------------------Ens S03
 
     cout << "Test start now!" << endl;
 

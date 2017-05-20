@@ -4,6 +4,7 @@
 #include <os>
 
 #include "types.hpp"
+#include "init.hpp"
 
 namespace octopus{
     /*
@@ -77,12 +78,29 @@ namespace octopus{
 
         //Devuelve la direccion de broadcast en formato IP4::addr
         void getBROADCAST(broadcast_t &br){
+            std::string ip = inet->ip_addr().str();
+            std::string netmask = inet->netmask().str();
+            new_configIPv4_t* tmp = formatStringConfig(ip.c_str(), netmask.c_str(), "", "");
 
-            br[0] = my_config->ip[0] | (0xFF - my_config->netmask[0]);
-            br[1] = my_config->ip[1] | (0xFF - my_config->netmask[1]);
-            br[2] = my_config->ip[2] | (0xFF - my_config->netmask[2]);
-            br[3] = my_config->ip[3] | (0xFF - my_config->netmask[3]);
+            printf("IP(String): %s\nNETMASK(String): %s\n", ip.c_str(), netmask.c_str() );
+            printf("Getting broadcast:\nIp: %d.%d.%d.%d\nNetmask: %d.%d.%d.%d\n",tmp->ip[0],
+                                                                            tmp->ip[1],
+                                                                            tmp->ip[2],
+                                                                            tmp->ip[3],
 
+                                                                            tmp->netmask[0],
+                                                                            tmp->netmask[1],
+                                                                            tmp->netmask[2],
+                                                                            tmp->netmask[3]);
+
+            br[0] = tmp->ip[0] | (0xFF - tmp->netmask[0]);
+            br[1] = tmp->ip[1] | (0xFF - tmp->netmask[1]);
+            br[2] = tmp->ip[2] | (0xFF - tmp->netmask[2]);
+            br[3] = tmp->ip[3] | (0xFF - tmp->netmask[3]);
+
+            printf("Broadcast: %d.%d.%d.%d\n", br[0], br[1], br[2], br[3] );
+
+            delete tmp;
         }
 
 

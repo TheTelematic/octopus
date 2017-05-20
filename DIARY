@@ -25,3 +25,8 @@
     Bueno he conseguido, gracias a la ayuda de la gente de IncludeOS en su chat, que tengo que lanzar los servicios
     con Qemu, ahora ya por lo menos le da IP por DHCP, eso es bueno, aunque le da la misma IP.
     Tal y como está ahora hecho falla al lanzar dos servicios ya que dice que la interfaz tap está ocupada.
+
+24/04/17
+
+    He conseguido comunicar dos servidores, mediante vmware en mi viejo portatil, se lanza en modo vga, es incomodo pero
+    al menos para hacer las pruebas puede servir.
