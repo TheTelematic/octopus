@@ -1,7 +1,7 @@
 /*
     Autor: Arturo Jesús Parra Soto
     email: arturoteleco95@protonmail.ch
-*/
+ */
 
 #ifndef __INIT__H
 #define  __INIT__H
@@ -22,9 +22,9 @@
 
 using namespace std;
 
-namespace octopus{
+namespace octopus {
 
-    new_configIPv4_t* defaultNetConfig(){
+new_configIPv4_t* defaultNetConfig(){
         static new_configIPv4_t* DEFAULT_CONFIG = new new_configIPv4_t;
 
 
@@ -49,19 +49,19 @@ namespace octopus{
         DEFAULT_CONFIG->dns[3] = 8;
 
         return DEFAULT_CONFIG;
-    }
+}
 
 
 
 
-    //Una funcion que le pasas la IP, la NETMASK, el GATEWAY y el DNS en formato string y te devuelva un tipo new_configIPv4_t
+//Una funcion que le pasas la IP, la NETMASK, el GATEWAY y el DNS en formato string y te devuelva un tipo new_configIPv4_t
 
-    new_configIPv4_t* formatStringConfig(const char* ip, const char* netmask, const char* gateway, const char* dns){
+new_configIPv4_t* formatStringConfig(const char* ip, const char* netmask, const char* gateway, const char* dns){
         /*
-        std::cout << "IP -> " << ip << std::endl;
-        std::cout << "NETMASK -> " << netmask << std::endl;
-        std::cout << "GATEWAY -> " << gateway << std::endl;
-        std::cout << "DNS -> " << dns << std::endl;*/
+           std::cout << "IP -> " << ip << std::endl;
+           std::cout << "NETMASK -> " << netmask << std::endl;
+           std::cout << "GATEWAY -> " << gateway << std::endl;
+           std::cout << "DNS -> " << dns << std::endl;*/
         //Devuelve un in_addr_t que es como un uint32_t
         auto ipf = inet_addr(ip);
         auto ntf = inet_addr(netmask);
@@ -92,41 +92,41 @@ namespace octopus{
 
         return NETWORK_CONFIG;
 
-    }
+}
 
-    std::stack<std::string> parseArgs(const std::string &args){
+/*std::stack<std::string> parseArgs(const std::string &args){
 
-        unsigned int start = 0, end;
+    unsigned int start = 0, end;
 
-        std::stack<std::string> result;
+    std::stack<std::string> result;
 
-        std::string delimeter = " ";
+    std::string delimeter = " ";
 
-        bool nombre_ejecutable = false;
+    bool nombre_ejecutable = false;
 
-        while((end = args.find(delimeter, start)) != std::string::npos){
-            if(!nombre_ejecutable){
-                nombre_ejecutable = true;
-            }else{
-                unsigned int tmp = args.find(delimeter, start);
-                if((tmp >= end) || (tmp == std::string::npos)){
+    while((end = args.find(delimeter, start)) != std::string::npos){
+        if(!nombre_ejecutable){
+            nombre_ejecutable = true;
+        }else{
+            unsigned int tmp = args.find(delimeter, start);
+            if((tmp >= end) || (tmp == std::string::npos)){
 
-                    std::string tmp = args.substr(start, end - start);
-                    result.push(tmp);
-                }
-
-
+                std::string tmp = args.substr(start, end - start);
+                result.push(tmp);
             }
-            start = end + 1;
-        }
 
-        if(start < (args.length() - 1)){
-            std::string tmp = args.substr(start, args.length() - start);
-            result.push(tmp);
-        }
 
-        return result;
+        }
+        start = end + 1;
     }
+
+    if(start < (args.length() - 1)){
+        std::string tmp = args.substr(start, args.length() - start);
+        result.push(tmp);
+    }
+
+    return result;
+   }*/
 
 }
 
