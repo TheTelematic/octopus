@@ -30,3 +30,9 @@
 
     He conseguido comunicar dos servidores, mediante vmware en mi viejo portatil, se lanza en modo vga, es incomodo pero
     al menos para hacer las pruebas puede servir.
+
+21/05/17
+
+    Ahora he "migrado" el proyecto a mi particion de Ubuntu, con la ultima version de IncludeOS dev-branch, he conseguido
+    sacar el output por el vga. Pero ahora el DHCP no lo consigo funcionar bien.
+    El proximo dia sigo
