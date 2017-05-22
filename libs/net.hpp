@@ -85,7 +85,7 @@ namespace octopus{
             new_configIPv4_t* tmp = formatStringConfig(ip.c_str(), netmask.c_str(), "", "");
 
             //printf("IP(String): %s\nNETMASK(String): %s\n", ip.c_str(), netmask.c_str() );
-            printf("Getting broadcast:\nIp: %d.%d.%d.%d\nNetmask: %d.%d.%d.%d\n",tmp->ip[0],
+            /*printf("Getting broadcast:\nIp: %d.%d.%d.%d\nNetmask: %d.%d.%d.%d\n",tmp->ip[0],
                                                                             tmp->ip[1],
                                                                             tmp->ip[2],
                                                                             tmp->ip[3],
@@ -93,7 +93,7 @@ namespace octopus{
                                                                             tmp->netmask[0],
                                                                             tmp->netmask[1],
                                                                             tmp->netmask[2],
-                                                                            tmp->netmask[3]);
+                                                                            tmp->netmask[3]);*/
 
             br[0] = tmp->ip[0] | (0xFF - tmp->netmask[0]);
             br[1] = tmp->ip[1] | (0xFF - tmp->netmask[1]);

@@ -39,7 +39,7 @@ void Service::start(){
 
         // End S00
 
-        //Configurar comportamiento -- S01
+        //Configure behaviour -- S01
 
         auto* ds = server->getDS();
 

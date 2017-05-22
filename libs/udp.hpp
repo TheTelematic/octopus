@@ -76,8 +76,9 @@ namespace octopus{
             ip += std::to_string(myIP[1]) + ".";
             ip += std::to_string(myIP[2]) + ".";
             ip += std::to_string(myIP[3]);
+            ip += "\0";
 
-            discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, ip.c_str(), sizeof(ip));
+            discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, ip.c_str(), std::strlen(ip.c_str()));
         }
 
         virtual ~octoUDPserver (){
