@@ -59,7 +59,7 @@ namespace octopus{
 
 
         void announceServer(){
-
+            printf("Announcing the server...\n");
             IPv4_t myIP;
             this->getIP(myIP);
 
