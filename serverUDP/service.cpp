@@ -33,57 +33,56 @@ octoUDPserver* server = NULL;
 
 void Service::start(){
 
-    // Inicializar el sistema -- S00
+        // Inicializar el sistema -- S00
 
-    server = new octoUDPserver();
+        server = new octoUDPserver();
 
-    // End S00
+        // End S00
 
-    //Configurar comportamiento -- S01
+        //Configurar comportamiento -- S01
 
-    auto* ds = server->getDS();
+        auto* ds = server->getDS();
 
-    ds->on_read(
-        [ds](
-          net::UDP::addr_t addr,
-          net::UDP::port_t port,
-          const char* data,
-          size_t len
-        ){
-           std::cout << "New discovery!" << std::endl;
+        ds->on_read( [ds](
+                        net::UDP::addr_t addr,
+                        net::UDP::port_t port,
+                        const char* data,
+                        size_t len
+                        ){
+                              std::cout << "New discovery!" << std::endl;
 
-           std::string strdata(data, len);
+                              std::string strdata(data, len);
 
-           CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
+                              CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
 
-           server->announceServer();
-       }
+                              server->announceServer();
+                        }
 
-   );
+        );
 
 
-    // ---------------------------------------End S01
-/*
-    // Announce the server -- S02
+        // ---------------------------------------End S01
 
-    server->announceServer();
+        // Announce the server -- S02
 
-    // ---------------------------------------End S02
-*/
-    // Configure timers -- S03
-    Timer t;
-
-    t.start(1s, []{
         server->announceServer();
-    });
 
-    if(t.is_running()){
-        cout << "TIMER CORRIENDO\n";
-    }
+        // ---------------------------------------End S02
 
-    // ---------------------------------------Ens S03
+        // Configure timers -- S03
+        Timer t;
 
-    cout << "Test start now!" << endl;
+        t.start(1s, [] {
+                        server->announceServer();
+                });
+
+        if(t.is_running()) {
+                cout << "TIMER CORRIENDO\n";
+        }
+
+        // ---------------------------------------Ens S03
+
+        cout << "Test start now!" << endl;
 
 
 }
