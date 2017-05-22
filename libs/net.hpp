@@ -70,10 +70,12 @@ namespace octopus{
         //Devuelve la ip en formato string
         void getIP(IPv4_t &ip){
 
-            ip[0] = my_config->ip[0];
-            ip[1] = my_config->ip[1];
-            ip[2] =  my_config->ip[2];
-            ip[3] =  my_config->ip[3];
+            net::IP4::addr tmp = inet->ip_addr();
+
+            ip[0] = tmp.part(0);
+            ip[1] = tmp.part(1);
+            ip[2] = tmp.part(2);
+            ip[3] = tmp.part(3);
         }
 
         //Devuelve la direccion de broadcast en formato IP4::addr
@@ -82,7 +84,7 @@ namespace octopus{
             std::string netmask = inet->netmask().str();
             new_configIPv4_t* tmp = formatStringConfig(ip.c_str(), netmask.c_str(), "", "");
 
-            printf("IP(String): %s\nNETMASK(String): %s\n", ip.c_str(), netmask.c_str() );
+            //printf("IP(String): %s\nNETMASK(String): %s\n", ip.c_str(), netmask.c_str() );
             printf("Getting broadcast:\nIp: %d.%d.%d.%d\nNetmask: %d.%d.%d.%d\n",tmp->ip[0],
                                                                             tmp->ip[1],
                                                                             tmp->ip[2],
