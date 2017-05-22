@@ -142,6 +142,7 @@ if __name__ == "__main__":
 				res = start_instance(instance)
 			except KeyboardInterrupt:
 				sys.exit(0)
+			sys.exit(0)
 			if res == 0:
 				instances.append(instance)
 	if len(instances) != args.instances:
