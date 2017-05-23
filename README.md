@@ -10,13 +10,13 @@ Notes:
 
 Instructions for use two instances of serverUDP:  
 
-    1 - Write the [service](https://github.com/TheTelematic/octopus/blob/master/serverUDP/service.cpp)
-    2 - cd serverUDP/
-    3 - ../build.sh
-    4 - ../clone.sh
+1 - Write the [service](https://github.com/TheTelematic/octopus/blob/master/serverUDP/service.cpp)  
+2 - cd serverUDP/  
+3 - ../build.sh  
+4 - ../clone.sh  
 
-    5.1.1 - cd build/
-    5.1.2 - ./vmware serverUDP
+5.1.1 - cd build/  
+5.1.2 - ./vmware serverUDP  
 
-    5.2.1 - cd build_2/
-    5.2.2 - ./vmware serverUDP
+5.2.1 - cd build_2/  
+5.2.2 - ./vmware serverUDP  
