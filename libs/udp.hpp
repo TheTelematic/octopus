@@ -12,6 +12,8 @@
 #include "init.hpp"
 #include "constans.hpp"
 
+#include <cassert>
+
 
 namespace octopus{
 
@@ -93,12 +95,18 @@ namespace octopus{
         }
 
         UDPserver_t* getDS(){
+            assert(this != nullptr);
+
             return this->discoverSock;
         }
         UDPserver_t* getPS(){
+            assert(this != nullptr);
+
             return this->publisherSock;
         }
         UDPserver_t* getSS(){
+            assert(this != nullptr);
+
             return this->suscriberSock;
         }
 
