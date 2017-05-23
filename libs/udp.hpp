@@ -59,26 +59,33 @@ namespace octopus{
 
 
         void announceServer(){
-            printf("Announcing the server...\n");
-            IPv4_t myIP;
-            this->getIP(myIP);
+            if( !octopus::networkConfigured ){
 
-            broadcast_t broadcast;
-            this->getBROADCAST(broadcast);
+                std::cout << "-*Can't announce server because the network isn't configured*-" << '\n';
 
-            //size_t myIP_l = sizeof(myIP);
+            }else{
+                printf("Announcing the server...\n");
+                IPv4_t myIP;
+                this->getIP(myIP);
 
-            printf("Sending discovering to: %d.%d.%d.%d:%d\n", broadcast[0], broadcast[1], broadcast[2], broadcast[3], DISCOVER_PORT);
+                broadcast_t broadcast;
+                this->getBROADCAST(broadcast);
 
-            std::string ip = "";
+                //size_t myIP_l = sizeof(myIP);
 
-            ip += std::to_string(myIP[0]) + ".";
-            ip += std::to_string(myIP[1]) + ".";
-            ip += std::to_string(myIP[2]) + ".";
-            ip += std::to_string(myIP[3]);
-            ip += "\0";
+                printf("Sending discovering to: %d.%d.%d.%d:%d\n", broadcast[0], broadcast[1], broadcast[2], broadcast[3], DISCOVER_PORT);
 
-            discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, ip.c_str(), std::strlen(ip.c_str()));
+                std::string ip = "";
+
+                ip += std::to_string(myIP[0]) + ".";
+                ip += std::to_string(myIP[1]) + ".";
+                ip += std::to_string(myIP[2]) + ".";
+                ip += std::to_string(myIP[3]);
+                ip += "\0";
+
+                discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, ip.c_str(), std::strlen(ip.c_str()));
+            }
+
         }
 
         virtual ~octoUDPserver (){
