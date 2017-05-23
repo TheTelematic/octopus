@@ -8,9 +8,9 @@ Notes:
     To launch with VMware Player and vga the drivers are:
       vmxnet3 vga_output
 
-Instructions for use serverUDP:  
+Instructions for use two instances of serverUDP:  
 
-    1 - Write the service
+    1 - Write the [service](https://github.com/TheTelematic/octopus/blob/master/serverUDP/service.cpp)
     2 - cd serverUDP/
     3 - ../build.sh
     4 - ../clone.sh
