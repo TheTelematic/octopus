@@ -6,7 +6,10 @@
 #include "types.hpp"
 #include "init.hpp"
 
+
+
 namespace octopus{
+    static bool networkConfigured;
     /*
         Template to init new_configIPv4_t:
 
@@ -35,6 +38,7 @@ namespace octopus{
     protected:
         net::Inet<net::IP4> *inet;
         new_configIPv4_t* my_config;
+
 
     public:
         //Realmente este constructor sirve de algo?
@@ -111,6 +115,13 @@ namespace octopus{
             auto& tmp = net::Inet4::ifconfig<0>(10);
 
             inet = &tmp;
+
+            networkConfigured = false;
+
+            inet->on_config([](auto &self) {
+                    std::cout << "DHCP IS CONFIGURED" << '\n';
+                    networkConfigured = true;
+            });
         }
         ~octoNet(){}
     };
