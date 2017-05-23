@@ -29,6 +29,7 @@ using namespace std;
 using namespace octopus;
 
 octoUDPserver* server = NULL;
+bool send_discover = false;
 
 
 void Service::start(){
@@ -41,36 +42,23 @@ void Service::start(){
 
         //Configure behaviour -- S01
 
-        auto* ds = server->getDS();
 
-        ds->on_read( [ds](
-                        net::UDP::addr_t addr,
-                        net::UDP::port_t port,
-                        const char* data,
-                        size_t len
-                        ){
-                              std::cout << "New discovery!" << std::endl;
-
-                              std::string strdata(data, len);
-
-                              CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
-
-                              server->announceServer();
-                        }
-
-        );
+        /*
+        net::Inet::on_config([](auto &self) {
+                std::cout << "DHCP IS CONFIGURED" << '\n';
+        });*/
 
 
         // ---------------------------------------End S01
 
         // Announce the server -- S02
 
-        server->announceServer();
+        //server->announceServer();
 
         // ---------------------------------------End S02
 
         // Configure timers -- S03
-        Timer t;
+        /*Timer t;
 
         t.start(1s, [] {
                         server->announceServer();
@@ -78,7 +66,18 @@ void Service::start(){
 
         if(t.is_running()) {
                 cout << "TIMER CORRIENDO\n";
-        }
+        }*/
+
+        //assert(Timers::active() == 1);
+
+
+
+        /*Timers::oneshot(1s, [] (auto) {
+
+
+            //server->announceServer();
+
+        });*/
 
         // ---------------------------------------Ens S03
 
@@ -87,8 +86,46 @@ void Service::start(){
 
 }
 
+/*
+    I have to use this method for heavy stuff
+*/
+void Service::ready(){
+    std::cout << "THE SERVICE IS READY" << '\n';
+
+    auto* ds = server->getDS();
+    ds->on_read( [ds](
+                net::UDP::addr_t addr,
+                net::UDP::port_t port,
+                const char* data,
+                size_t len
+                ){
+                    if(octopus::networkConfigured){
+                        std::cout << "New discovery!" << std::endl;
+
+                        std::string strdata(data, len);
+
+                        CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
+                    }else{
+                        std::cout << "**Discovery received, but network isn't configured**" << '\n';
+                    }
 
 
+
+                }
+
+    );
+
+    server->announceServer();
+
+    Timers::periodic(5s, 5s, [] (auto) {
+        if(octopus::networkConfigured){
+            cout << "Time out!" << endl;
+            server->announceServer();
+        }
+    });
+
+    //server->announceServer();
+}
 
 
 
