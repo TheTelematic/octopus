@@ -126,6 +126,9 @@ void Service::ready(){
         server->announceServer();
     });
 
+    /*
+        To show the IP ADDRESSES of the others servers discovered
+    */
     Timers::periodic(3s, 3s, [] (auto) {
         discovered_servers_t list_of_addresses = server->getServerAddresses();
 
@@ -139,6 +142,8 @@ void Service::ready(){
         std::cout << "--------------------" << '\n';
 
     });
+
+    
 
     //server->announceServer();
 }

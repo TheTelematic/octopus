@@ -113,6 +113,7 @@ namespace octopus{
             return this->suscriberSock;
         }
 
+
         void addServerAddr(ds_addrs_t addr){
             if(discovered_servers.empty()){
                 discovered_servers.push_back(addr);
@@ -138,7 +139,11 @@ namespace octopus{
             return discovered_servers;
         }
 
+        // TODO
+        void testAliveServers(){
 
+
+        }
 
 
     };
