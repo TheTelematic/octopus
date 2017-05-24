@@ -47,6 +47,7 @@ namespace octopus{
             discoverSock = &tmp;
             printf("Server listening on discover port %d \n", DISCOVER_PORT);
 
+
             auto& tmp2 = this->inet->udp().bind(PUBLISHER_PORT);
 
             publisherSock = &tmp2;
@@ -66,26 +67,33 @@ namespace octopus{
                 std::cout << "-*Can't announce server because the network isn't configured*-" << '\n';
 
             }else{
-                printf("Announcing the server...\n");
-                IPv4_t myIP;
-                this->getIP(myIP);
+                assert(discoverSock != nullptr);
+                //printf("Announcing the server...\n");
+                ip4_t myIP = discoverSock->local_addr();
 
                 broadcast_t broadcast;
-                this->getBROADCAST(broadcast);
+                broadcast[0] = 255;
+                broadcast[1] = 255;
+                broadcast[2] = 255;
+                broadcast[3] = 255;
+                //this->getBROADCAST(broadcast);
 
                 //size_t myIP_l = sizeof(myIP);
 
-                printf("Sending discovering to: %d.%d.%d.%d:%d\n", broadcast[0], broadcast[1], broadcast[2], broadcast[3], DISCOVER_PORT);
+                printf("Sending discovering to: %d.%d.%d.%d:%d (%s)\n", broadcast[0], broadcast[1], broadcast[2], broadcast[3], DISCOVER_PORT, myIP.to_string().c_str());
+                fflush(stdout);
 
-                std::string ip = "";
+                //std::string ip = "";
 
-                ip += std::to_string(myIP[0]) + ".";
+                /*ip += std::to_string(myIP[0]) + ".";
                 ip += std::to_string(myIP[1]) + ".";
                 ip += std::to_string(myIP[2]) + ".";
                 ip += std::to_string(myIP[3]);
-                ip += "\0";
+                ip += "\0";*/
 
-                discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, ip.c_str(), std::strlen(ip.c_str()));
+                std::string buffer = myIP.to_string();
+
+                discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, buffer.c_str(), buffer.size());
             }
 
         }
@@ -95,17 +103,17 @@ namespace octopus{
         }
 
         UDPserver_t* getDS(){
-            assert(this != nullptr);
+            assert(discoverSock != nullptr);
 
             return this->discoverSock;
         }
         UDPserver_t* getPS(){
-            assert(this != nullptr);
+            assert(publisherSock != nullptr);
 
             return this->publisherSock;
         }
         UDPserver_t* getSS(){
-            assert(this != nullptr);
+            assert(suscriberSock != nullptr);
 
             return this->suscriberSock;
         }
