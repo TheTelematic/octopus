@@ -36,3 +36,8 @@
     Ahora he "migrado" el proyecto a mi particion de Ubuntu, con la ultima version de IncludeOS dev-branch, he conseguido
     sacar el output por el vga. Pero ahora el DHCP no lo consigo funcionar bien.
     El proximo dia sigo
+
+24/05/17
+
+    Siiiiii, he conseguido que se comuniquen y se manden su IP una vez la tengan suministrada por el DHCP de VMware :D
+    Ahora toca implementar los protocolos
