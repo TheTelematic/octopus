@@ -72,24 +72,13 @@ namespace octopus{
                 ip4_t myIP = discoverSock->local_addr();
 
                 broadcast_t broadcast;
-                broadcast[0] = 255;
-                broadcast[1] = 255;
-                broadcast[2] = 255;
-                broadcast[3] = 255;
-                //this->getBROADCAST(broadcast);
-
-                //size_t myIP_l = sizeof(myIP);
+                broadcast[0] = BROADCAST_ADDRESS[0];
+                broadcast[1] = BROADCAST_ADDRESS[1];
+                broadcast[2] = BROADCAST_ADDRESS[2];
+                broadcast[3] = BROADCAST_ADDRESS[3];
 
                 printf("Sending discovering to: %d.%d.%d.%d:%d (%s)\n", broadcast[0], broadcast[1], broadcast[2], broadcast[3], DISCOVER_PORT, myIP.to_string().c_str());
                 fflush(stdout);
-
-                //std::string ip = "";
-
-                /*ip += std::to_string(myIP[0]) + ".";
-                ip += std::to_string(myIP[1]) + ".";
-                ip += std::to_string(myIP[2]) + ".";
-                ip += std::to_string(myIP[3]);
-                ip += "\0";*/
 
                 std::string buffer = myIP.to_string();
 
