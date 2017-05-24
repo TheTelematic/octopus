@@ -104,7 +104,7 @@ namespace octopus{
             br[2] = tmp->ip[2] | (0xFF - tmp->netmask[2]);
             br[3] = tmp->ip[3] | (0xFF - tmp->netmask[3]);
 
-            printf("Broadcast: %d.%d.%d.%d\n", br[0], br[1], br[2], br[3] );
+            //printf("Broadcast: %d.%d.%d.%d\n", br[0], br[1], br[2], br[3] );
 
             delete tmp;
         }
