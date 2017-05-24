@@ -22,6 +22,10 @@ namespace octopus{
 
     typedef uint8_t broadcast_t[4];
     typedef net::IP4::addr ip4_t;
+
+    typedef uint32_t ds_addrs_t;
+    typedef std::list<ds_addrs_t> discovered_servers_t;
+    typedef std::list<ds_addrs_t>::iterator iterator_ds_t;
 }
 
 

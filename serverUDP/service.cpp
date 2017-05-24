@@ -52,29 +52,13 @@ void Service::start(){
                         //std::cout << "HI GUY" << '\n';
                         /**/
                         if(octopus::networkConfigured){
-                            std::cout << "New discovery!" << std::endl;
+                            //std::cout << "New discovery!" << std::endl;
 
-                            /*uint32_t ip;
-
-                            // I think this is not totally correct, because I send a sizeof(ip4_t)
-                            if(len == sizeof(uint32_t)){
-
-                                //assert(len == 4);
-
-                                ip = data[3] << 24;
-                                ip |= data[2] << 16;
-                                ip |= data[1] << 8;
-                                ip |= data[0];
-
-                            }else{
-                                std::cout << "-**ERROR 00001" << std::endl;
-                            }
-
-
-                            ip4_t tmp(ip);*/
                             std::string strdata(data,len);
 
-                            CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
+                            CHECK(1, "Discovered new server in %s", strdata.c_str());
+
+                            server->addServerAddr(inet_addr(strdata.c_str()));
                         }else{
                             std::cout << "**Discovery received, but network isn't configured**" << '\n';
                         }
@@ -140,6 +124,20 @@ void Service::ready(){
 
     Timers::periodic(5s, 5s, [] (auto) {
         server->announceServer();
+    });
+
+    Timers::periodic(3s, 3s, [] (auto) {
+        discovered_servers_t list_of_addresses = server->getServerAddresses();
+
+        std::cout << "IP ADDRESSES TABLE" << '\n';
+        std::cout << "--------------------" << '\n';
+
+        for(iterator_ds_t it = list_of_addresses.begin(); it != list_of_addresses.end(); it++ ){
+
+            printIP__uint32_t(*it);
+        }
+        std::cout << "--------------------" << '\n';
+
     });
 
     //server->announceServer();

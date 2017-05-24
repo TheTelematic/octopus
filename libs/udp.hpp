@@ -18,6 +18,12 @@
 namespace octopus{
 
     class octoUDPserver : public octoNet{
+    private:
+        UDPserver_t* discoverSock;
+        UDPserver_t* publisherSock;
+        UDPserver_t* suscriberSock;
+
+        discovered_servers_t discovered_servers;
 
     public:
         /*octoUDPserver (new_configIPv4_t* nw = defaultNetConfig()) : octoNet(nw){
@@ -107,10 +113,30 @@ namespace octopus{
             return this->suscriberSock;
         }
 
-    private:
-        UDPserver_t* discoverSock;
-        UDPserver_t* publisherSock;
-        UDPserver_t* suscriberSock;
+        void addServerAddr(ds_addrs_t addr){
+            if(discovered_servers.empty()){
+                discovered_servers.push_back(addr);
+                return;
+            }
+
+            for(iterator_ds_t it = discovered_servers.begin(); it != discovered_servers.end(); it++ ){
+                if(*it == addr){
+                    return;
+                }
+            }
+
+            discovered_servers.push_back(addr);
+
+        }
+
+        void removeServerAddr(ds_addrs_t addr){
+
+            discovered_servers.remove(addr);
+        }
+
+        discovered_servers_t getServerAddresses(){
+            return discovered_servers;
+        }
 
 
 
