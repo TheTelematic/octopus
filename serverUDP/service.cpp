@@ -42,7 +42,49 @@ void Service::start(){
 
         //Configure behaviour -- S01
 
+        auto* ds = server->getDS();
+        ds->on_read( [ds](
+                    net::UDP::addr_t addr,
+                    net::UDP::port_t port,
+                    const char* data,
+                    size_t len
+                    ){
+                        //std::cout << "HI GUY" << '\n';
+                        /**/
+                        if(octopus::networkConfigured){
+                            std::cout << "New discovery!" << std::endl;
 
+                            /*uint32_t ip;
+
+                            // I think this is not totally correct, because I send a sizeof(ip4_t)
+                            if(len == sizeof(uint32_t)){
+
+                                //assert(len == 4);
+
+                                ip = data[3] << 24;
+                                ip |= data[2] << 16;
+                                ip |= data[1] << 8;
+                                ip |= data[0];
+
+                            }else{
+                                std::cout << "-**ERROR 00001" << std::endl;
+                            }
+
+
+                            ip4_t tmp(ip);*/
+                            std::string strdata(data,len);
+
+                            CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
+                        }else{
+                            std::cout << "**Discovery received, but network isn't configured**" << '\n';
+                        }
+                        /**/
+
+
+
+                    }
+
+        );
         /*
         net::Inet::on_config([](auto &self) {
                 std::cout << "DHCP IS CONFIGURED" << '\n';
@@ -92,36 +134,12 @@ void Service::start(){
 void Service::ready(){
     std::cout << "THE SERVICE IS READY" << '\n';
 
-    auto* ds = server->getDS();
-    ds->on_read( [ds](
-                net::UDP::addr_t addr,
-                net::UDP::port_t port,
-                const char* data,
-                size_t len
-                ){
-                    if(octopus::networkConfigured){
-                        std::cout << "New discovery!" << std::endl;
 
-                        std::string strdata(data, len);
-
-                        CHECK(1, "Getting UDP data from %s:  %d -> IP: %s", addr.str().c_str(), port, strdata.c_str());
-                    }else{
-                        std::cout << "**Discovery received, but network isn't configured**" << '\n';
-                    }
-
-
-
-                }
-
-    );
 
     server->announceServer();
 
     Timers::periodic(5s, 5s, [] (auto) {
-        if(octopus::networkConfigured){
-            cout << "Time out!" << endl;
-            server->announceServer();
-        }
+        server->announceServer();
     });
 
     //server->announceServer();
