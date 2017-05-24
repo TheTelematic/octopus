@@ -41,3 +41,5 @@
 
     Siiiiii, he conseguido que se comuniquen y se manden su IP una vez la tengan suministrada por el DHCP de VMware :D
     Ahora toca implementar los protocolos
+
+    El de descubrimiento está hecho pero hay que hacer un keepalive. Lo mismo con lo de suscripcion/publicacion me puede servir para tal
