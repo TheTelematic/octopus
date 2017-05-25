@@ -59,7 +59,6 @@ namespace octopus{
         }
 
 
-
         bool announceServer(){
             if( !octopus::networkConfigured ){
 
