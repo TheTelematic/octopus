@@ -25,27 +25,9 @@ namespace octopus{
 
         discovered_servers_t discovered_servers;
 
-    public:
-        /*octoUDPserver (new_configIPv4_t* nw = defaultNetConfig()) : octoNet(nw){
+        static octoUDPserver *singleton_instance;
 
-
-            auto& tmp = this->inet->udp().bind(DISCOVER_PORT);
-
-            discoverSock = &tmp;
-            printf("Server listening on discover port %d \n", DISCOVER_PORT);
-
-            auto& tmp2 = this->inet->udp().bind(PUBLISHER_PORT);
-
-            publisherSock = &tmp2;
-            printf("Server listening on publisher port %d \n", PUBLISHER_PORT);
-
-            auto& tmp3 = this->inet->udp().bind(SUSCRIBER_PORT);
-
-            suscriberSock = &tmp3;
-            printf("Server listening on suscriber port %d \n", SUSCRIBER_PORT);
-
-        }*/
-
+    protected:
         octoUDPserver () : octoNet(){
 
             auto& tmp = this->inet->udp().bind(DISCOVER_PORT);
@@ -65,6 +47,17 @@ namespace octopus{
             printf("Server listening on suscriber port %d \n", SUSCRIBER_PORT);
 
         }
+
+    public:
+
+        static octoUDPserver* getInstance(){
+
+            if(singleton_instance == nullptr) singleton_instance = new octoUDPserver;
+
+            return singleton_instance;
+
+        }
+
 
 
         void announceServer(){
@@ -114,19 +107,20 @@ namespace octopus{
         }
 
 
-        void addServerAddr(ds_addrs_t addr){
+        bool addServerAddr(ds_addrs_t addr){
             if(discovered_servers.empty()){
                 discovered_servers.push_back(addr);
-                return;
+                return true;
             }
 
             for(iterator_ds_t it = discovered_servers.begin(); it != discovered_servers.end(); it++ ){
                 if(*it == addr){
-                    return;
+                    return false;
                 }
             }
 
             discovered_servers.push_back(addr);
+            return true;
 
         }
 
