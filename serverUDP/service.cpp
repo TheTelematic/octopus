@@ -15,12 +15,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//Librerias de IncludeOS
+//IncludeOS's libs
 #include <os>
 #include <util/timer.hpp>
 
 
-//Mis Librerias
+//My libs
 #include "../libs/udp.hpp"
 #include "../libs/init.hpp"
 
@@ -28,86 +28,36 @@
 using namespace std;
 using namespace octopus;
 
-octoUDPserver* server = NULL;
-bool send_discover = false;
 
+/*
+    GLOBAL VARIABLES
+    -------------------------------------------
+
+    How IncludeOS is in one processor and one only thread, global variables it's not a big risky.
+    Because the functions of timers or of handlers are going to do all, before another function went executed
+*/
+bool new_server = false;
+octoUDPserver* octoUDPserver::singleton_instance = nullptr;
+
+/*
+    DECLARATION OF THE FUNCTIONS
+    -------------------------------------------
+*/
+void handle_discoversocket_receiver(const char *data, size_t len);
+void announceServer();
+void showTable();
+
+/*
+    MAIN FUNCTIONS
+    -------------------------------------------
+*/
 
 void Service::start(){
+    // Inicializar el sistema -- S00
 
-        // Inicializar el sistema -- S00
+    // End S00
 
-        server = new octoUDPserver();
-
-        // End S00
-
-        //Configure behaviour -- S01
-
-        auto* ds = server->getDS();
-        ds->on_read( [ds](
-                    net::UDP::addr_t addr,
-                    net::UDP::port_t port,
-                    const char* data,
-                    size_t len
-                    ){
-                        //std::cout << "HI GUY" << '\n';
-                        /**/
-                        if(octopus::networkConfigured){
-                            //std::cout << "New discovery!" << std::endl;
-
-                            std::string strdata(data,len);
-
-                            CHECK(1, "Discovered new server in %s", strdata.c_str());
-
-                            server->addServerAddr(inet_addr(strdata.c_str()));
-                        }else{
-                            std::cout << "**Discovery received, but network isn't configured**" << '\n';
-                        }
-                        /**/
-
-
-
-                    }
-
-        );
-        /*
-        net::Inet::on_config([](auto &self) {
-                std::cout << "DHCP IS CONFIGURED" << '\n';
-        });*/
-
-
-        // ---------------------------------------End S01
-
-        // Announce the server -- S02
-
-        //server->announceServer();
-
-        // ---------------------------------------End S02
-
-        // Configure timers -- S03
-        /*Timer t;
-
-        t.start(1s, [] {
-                        server->announceServer();
-                });
-
-        if(t.is_running()) {
-                cout << "TIMER CORRIENDO\n";
-        }*/
-
-        //assert(Timers::active() == 1);
-
-
-
-        /*Timers::oneshot(1s, [] (auto) {
-
-
-            //server->announceServer();
-
-        });*/
-
-        // ---------------------------------------Ens S03
-
-        cout << "Test start now!" << endl;
+    cout << "THE SERVICE IS STARTED" << endl;
 
 
 }
@@ -116,20 +66,78 @@ void Service::start(){
     I have to use this method for heavy stuff
 */
 void Service::ready(){
+    octoUDPserver* server = octoUDPserver::getInstance();
+    assert(server != nullptr);
+    
     std::cout << "THE SERVICE IS READY" << '\n';
+    auto* ds = server->getDS();
+    ds->on_read( [ds](
+                net::UDP::addr_t addr,
+                net::UDP::port_t port,
+                const char* data,
+                size_t len
+                ){
+                    handle_discoversocket_receiver(data, len);
+                }
 
-
-
-    server->announceServer();
+    );
 
     Timers::periodic(5s, 5s, [] (auto) {
-        server->announceServer();
+        announceServer();
     });
 
     /*
         To show the IP ADDRESSES of the others servers discovered
     */
     Timers::periodic(3s, 3s, [] (auto) {
+        showTable();
+    });
+
+    announceServer();
+    std::cout << "THE SERVICE IS CONFIGURED" << '\n';
+}
+
+
+
+
+/*
+    DEFINITION OF THE FUNCTIONS
+    -------------------------------------------
+*/
+
+void handle_discoversocket_receiver(const char *data, size_t len){
+    if(octopus::networkConfigured){
+        octoUDPserver* server = octoUDPserver::getInstance();
+        assert(server != nullptr);
+        //std::cout << "New discovery!" << std::endl;
+
+        std::string strdata(data,len);
+
+        CHECK(1, "Discovered new server in %s", strdata.c_str());
+
+        if(new_server){
+            server->addServerAddr(inet_addr(strdata.c_str()));
+        }else{
+            new_server = server->addServerAddr(inet_addr(strdata.c_str()));
+        }
+
+    }else{
+        std::cout << "**Discovery received, but network isn't configured**" << '\n';
+    }
+}
+
+void announceServer(){
+    octoUDPserver* server = octoUDPserver::getInstance();
+    assert(server != nullptr);
+
+    server->announceServer();
+}
+
+void showTable(){
+
+    if (new_server) {
+        octoUDPserver* server = octoUDPserver::getInstance();
+        assert(server != nullptr);
         discovered_servers_t list_of_addresses = server->getServerAddresses();
 
         std::cout << "IP ADDRESSES TABLE" << '\n';
@@ -141,27 +149,10 @@ void Service::ready(){
         }
         std::cout << "--------------------" << '\n';
 
-    });
+        new_server = false;
+    }
 
-    
-
-    //server->announceServer();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
