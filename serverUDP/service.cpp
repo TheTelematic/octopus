@@ -44,8 +44,9 @@ octoUDPserver* octoUDPserver::singleton_instance = nullptr;
     -------------------------------------------
 */
 void handle_discoversocket_receiver(const char *data, size_t len);
-void announceServer();
+bool announceServer();
 void showTable();
+void tryAnnounceServer();
 
 /*
     MAIN FUNCTIONS
@@ -68,7 +69,7 @@ void Service::start(){
 void Service::ready(){
     octoUDPserver* server = octoUDPserver::getInstance();
     assert(server != nullptr);
-    
+
     std::cout << "THE SERVICE IS READY" << '\n';
     auto* ds = server->getDS();
     ds->on_read( [ds](
@@ -82,9 +83,13 @@ void Service::ready(){
 
     );
 
-    Timers::periodic(5s, 5s, [] (auto) {
-        announceServer();
+    Timers::oneshot(1s, [] (auto) {
+        tryAnnounceServer();
     });
+
+    /*Timers::periodic(5s, 5s, [] (auto) {
+        announceServer();
+    });*/
 
     /*
         To show the IP ADDRESSES of the others servers discovered
@@ -93,7 +98,7 @@ void Service::ready(){
         showTable();
     });
 
-    announceServer();
+
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';
 }
 
@@ -104,6 +109,16 @@ void Service::ready(){
     DEFINITION OF THE FUNCTIONS
     -------------------------------------------
 */
+
+void tryAnnounceServer(){
+    if( !announceServer()){
+
+        Timers::oneshot(1s, [] (auto) {
+            tryAnnounceServer();
+        });
+
+    }
+}
 
 void handle_discoversocket_receiver(const char *data, size_t len){
     if(octopus::networkConfigured){
@@ -116,9 +131,14 @@ void handle_discoversocket_receiver(const char *data, size_t len){
         CHECK(1, "Discovered new server in %s", strdata.c_str());
 
         if(new_server){
-            server->addServerAddr(inet_addr(strdata.c_str()));
+            if(server->addServerAddr(inet_addr(strdata.c_str()))){
+                announceServer();
+            }
         }else{
             new_server = server->addServerAddr(inet_addr(strdata.c_str()));
+            if(new_server){
+                announceServer();
+            }
         }
 
     }else{
@@ -126,11 +146,11 @@ void handle_discoversocket_receiver(const char *data, size_t len){
     }
 }
 
-void announceServer(){
+bool announceServer(){
     octoUDPserver* server = octoUDPserver::getInstance();
     assert(server != nullptr);
 
-    server->announceServer();
+    return server->announceServer();
 }
 
 void showTable(){

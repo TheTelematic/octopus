@@ -60,10 +60,11 @@ namespace octopus{
 
 
 
-        void announceServer(){
+        bool announceServer(){
             if( !octopus::networkConfigured ){
 
                 std::cout << "-*Can't announce server because the network isn't configured*-" << '\n';
+                return false;
 
             }else{
                 assert(discoverSock != nullptr);
@@ -82,6 +83,8 @@ namespace octopus{
                 std::string buffer = myIP.to_string();
 
                 discoverSock->sendto({broadcast[0], broadcast[1], broadcast[2], broadcast[3]}, DISCOVER_PORT, buffer.c_str(), buffer.size());
+
+                return true;
             }
 
         }
