@@ -127,6 +127,7 @@ namespace octopus{
     };
 
     void printIP__uint32_t(uint32_t ip){
+
         unsigned char bytes[4];
 
         bytes[0] = ip & 0xFF;

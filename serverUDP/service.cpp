@@ -128,14 +128,14 @@ void handle_discoversocket_receiver(const char *data, size_t len){
 
         std::string strdata(data,len);
 
-        CHECK(1, "Discovered new server in %s", strdata.c_str());
+        CHECK(1, "Discovered new server in #%s#", strdata.c_str());
 
         if(new_server){
-            if(server->addServerAddr(inet_addr(strdata.c_str()))){
+            if(server->addServerAddr(strdata)){
                 announceServer();
             }
         }else{
-            new_server = server->addServerAddr(inet_addr(strdata.c_str()));
+            new_server = server->addServerAddr(strdata);
             if(new_server){
                 announceServer();
             }
@@ -165,7 +165,7 @@ void showTable(){
 
         for(iterator_ds_t it = list_of_addresses.begin(); it != list_of_addresses.end(); it++ ){
 
-            printIP__uint32_t(*it);
+            std::cout << *it << '\n';
         }
         std::cout << "--------------------" << '\n';
 
