@@ -18,7 +18,7 @@ namespace octopus{
     };
 
     typedef net::tcp::Listener TCPserver_t;
-    typedef net::UDPSocket UDPserver_t;
+    typedef net::UDPSocket UDPsocket_t;
 
     typedef uint8_t broadcast_t[4];
     typedef net::IP4::addr ip4_t;

@@ -23,6 +23,7 @@
 //My libs
 #include "../libs/udp.hpp"
 #include "../libs/init.hpp"
+#include "../libs/myapi.hpp"
 
 
 using namespace std;
@@ -44,7 +45,6 @@ octoUDPserver* octoUDPserver::singleton_instance = nullptr;
     -------------------------------------------
 */
 void handle_discoversocket_receiver(const char *data, size_t len);
-bool announceServer();
 void showTable();
 void tryAnnounceServer();
 
@@ -104,12 +104,10 @@ void Service::ready(){
 
 
 
-
 /*
     DEFINITION OF THE FUNCTIONS
     -------------------------------------------
 */
-
 void tryAnnounceServer(){
     if( !announceServer()){
 
@@ -122,20 +120,17 @@ void tryAnnounceServer(){
 
 void handle_discoversocket_receiver(const char *data, size_t len){
     if(octopus::networkConfigured){
-        octoUDPserver* server = octoUDPserver::getInstance();
-        assert(server != nullptr);
-        //std::cout << "New discovery!" << std::endl;
 
         std::string strdata(data,len);
 
         CHECK(1, "Discovered new server in #%s#", strdata.c_str());
 
         if(new_server){
-            if(server->addServerAddr(strdata)){
+            if(addAddrServer(strdata)){
                 announceServer();
             }
         }else{
-            new_server = server->addServerAddr(strdata);
+            new_server = addAddrServer(strdata);
             if(new_server){
                 announceServer();
             }
@@ -146,12 +141,7 @@ void handle_discoversocket_receiver(const char *data, size_t len){
     }
 }
 
-bool announceServer(){
-    octoUDPserver* server = octoUDPserver::getInstance();
-    assert(server != nullptr);
 
-    return server->announceServer();
-}
 
 void showTable(){
 
@@ -165,7 +155,8 @@ void showTable(){
 
         for(iterator_ds_t it = list_of_addresses.begin(); it != list_of_addresses.end(); it++ ){
 
-            std::cout << *it << '\n';
+            showIpAddr(*it);
+
         }
         std::cout << "--------------------" << '\n';
 
@@ -173,6 +164,7 @@ void showTable(){
     }
 
 }
+
 
 
 
