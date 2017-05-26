@@ -26,6 +26,17 @@ namespace octopus{
     typedef std::string ds_addrs_t;
     typedef std::list<ds_addrs_t> discovered_servers_t;
     typedef std::list<ds_addrs_t>::iterator iterator_ds_t;
+
+
+    typedef std::string topic_t;
+    typedef struct{
+        topic_t topic;
+        discovered_servers_t suscribed_servers;
+
+    }topic_list_item_t;
+
+    typedef std::list<topic_list_item_t> topic_list_t;
+    typedef std::list<topic_list_item_t>::iterator iterator_tl_t;
 }
 
 

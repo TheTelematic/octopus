@@ -1,5 +1,8 @@
 #ifndef __SERVERS__HPP__
-#define __SERVERS__HPP__ value
+#define __SERVERS__HPP__
+
+#include "types.hpp"
+#include "constans.hpp"
 
 namespace octopus{
     class GenericUDPServer{
@@ -29,7 +32,7 @@ namespace octopus{
 
         }
 
-        std::string getStrIpAddr(const ds_addrs_t addr)const{
+        std::string getStrIpAddr(const ds_addrs_t addr){
 
             return addr;
 
@@ -106,12 +109,46 @@ namespace octopus{
 
     private:
 
-        bool sendSuscription(const char* topic, int length, ds_addrs_t addr){
+        topic_list_t topic_list;
+
+
+
+        const char* topic_t2charptr(const topic_t topic){
+
+            return topic.c_str();
+        }
+
+        int sizeTopic(topic_t topic){
+            return topic.size();
+        }
+
+        void sendSuscription(topic_t topic, ds_addrs_t addr){
 
             ip4_t ip(addr);
 
+            this->sendto(ip, SUSCRIBER_PORT, topic_t2charptr(topic), sizeTopic(topic));
 
-            this->sendto(ip, SUSCRIBER_PORT, topic, length + 1);
+        }
+
+        void addNewtopic(ds_addrs_t ip_server, topic_t topic){
+            topic_list_item_t new_topic;
+
+            new_topic.topic = topic;
+            new_topic.suscribed_servers.push_back(ip_server);
+
+            topic_list.push_back(new_topic);
+        }
+
+        void addServer2Topic(topic_list_item_t *item, ds_addrs_t ip_server){
+
+            for(iterator_ds_t it = item->suscribed_servers.begin(); it != item->suscribed_servers.end(); it++ ){
+                if(*it == ip_server){
+
+                    return;
+
+                }
+            }
+            item->suscribed_servers.push_back(ip_server);
 
         }
 
@@ -119,15 +156,15 @@ namespace octopus{
     public:
         SuscriberServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
 
-        bool suscribe(const char* topic, discovered_servers_t discovered_servers){
+        bool suscribe(topic_t topic, discovered_servers_t discovered_servers){
             if( !octopus::networkConfigured ){
 
                 std::cout << "-*Can't suscribe to the topic because the network isn't configured*-" << '\n';
                 return false;
 
             }else{
-                int length = strlen(topic);
-                assert( length != 0 );
+
+                assert( sizeTopic(topic) != 0 );
 
                 if(discovered_servers.size() == 0){
                     std::cout << "-*Can't suscribe to the topic because there are no servers to send it*-" << '\n';
@@ -140,15 +177,11 @@ namespace octopus{
 
                     std::string receiver = getStrIpAddr(*it);
 
-                    printf("Sending suscription of %s to %s -> ", topic, receiver.c_str() );
+                    printf("Sending suscription of %s to %s -> ", topic_t2charptr(topic), receiver.c_str() );
 
-                    if( !sendSuscription(topic, length, receiver)){
-                        printf("FAILED\n");
+                    sendSuscription(topic, receiver);
 
-                        //TODO: Return false ?
-                    }else{
-                        printf("OK\n");
-                    }
+                    printf("OK\n");
 
 
                 }
@@ -160,8 +193,26 @@ namespace octopus{
 
         }
 
-        bool addSuscription(){
+        bool addSuscription(ds_addrs_t ip_server, topic_t topic){
 
+
+
+            if(topic_list.empty()){
+                addNewtopic(ip_server, topic);
+
+                return true;
+            }
+
+            for(iterator_tl_t it = topic_list.begin(); it != topic_list.end(); it++ ){
+                if(it->topic == topic){
+
+                    addServer2Topic(&(*it), ip_server);
+
+                }
+            }
+
+            addNewtopic(ip_server, topic);
+            return true;
         }
 
 

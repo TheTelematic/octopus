@@ -9,8 +9,6 @@
 
 //Mis Librerias
 #include "net.hpp"
-#include "init.hpp"
-#include "constans.hpp"
 #include "servers.hpp"
 
 #include <cassert>
@@ -22,7 +20,7 @@ namespace octopus{
     private:
         DiscoverServer *discoverer;
         UDPsocket_t* publisherSock;
-        UDPsocket_t* suscriberSock;
+        SuscriberServer* suscriber;
 
         static octoUDPserver *singleton_instance;
 
@@ -52,7 +50,7 @@ namespace octopus{
 
             auto& tmp3 = this->inet->udp().bind(SUSCRIBER_PORT);
 
-            suscriberSock = &tmp3;
+            suscriber = new SuscriberServer(&tmp3);
             printf("Server listening on suscriber port %d \n", SUSCRIBER_PORT);
 
         }
@@ -85,9 +83,9 @@ namespace octopus{
             return this->publisherSock;
         }
         UDPsocket_t* getSS(){
-            assert(suscriberSock != nullptr);
+            assert(suscriber != nullptr);
 
-            return this->suscriberSock;
+            return suscriber->getSocket();
         }
 
 
@@ -112,6 +110,12 @@ namespace octopus{
         // TODO
         void testAliveServers(){
 
+
+        }
+
+        bool suscribe(topic_t topic){
+
+            return suscriber->suscribe(topic, discoverer->getServerAddresses());
 
         }
 
