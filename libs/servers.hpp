@@ -3,6 +3,7 @@
 
 #include "types.hpp"
 #include "constans.hpp"
+#include "message.hpp"
 
 namespace octopus{
     class GenericUDPServer{
@@ -221,7 +222,79 @@ namespace octopus{
         }
 
 
+        discovered_servers_t getServersOfTopic(topic_t topic){
+
+            assert(topic_list.empty());
+
+            for(iterator_tl_t it = topic_list.begin(); it != topic_list.end(); it++ ){
+
+                if(it->topic == topic){
+                    return it->suscribed_servers;
+                }
+            }
+
+            assert(1);
+            discovered_servers_t tmp;
+            return tmp;
+        }
+
+
+    };
+
+
+    class PublisherServer : public GenericUDPServer{
+    private:
+
+    public:
+        PublisherServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
+
+        bool publish(topic_t topic, topic_message_t message, discovered_servers_t suscribed_servers){
+
+            if(suscribed_servers.empty()){
+                std::cout << "No suscribed servers to publish" << '\n';
+                return false;
+            }
+
+            for(iterator_ds_t it = suscribed_servers.begin(); it != suscribed_servers.end(); it++ ){
+
+                ip4_t addr(*it);
+
+                Message m(topic, message);
+
+                m.build();
+
+                std::string request = m.getRequest();
+
+                this->sendto(addr, PUBLISHER_PORT, request.c_str(), request.size());
+
+            }
+
+            return true;
+        }
+
     };
 }
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//

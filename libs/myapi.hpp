@@ -36,7 +36,7 @@ namespace octopus{
         assert(server != nullptr);
 
         if( server->addServerAddr(addr)){
-            /*net::UDP::addr_t tmp(addr);
+            /*ip4_t tmp(addr);
             addSuscription(tmp, KEEPALIVE_TOPIC); // This will have two duplicate list of the discovered servers TODO: FIXME */
 
             return true;
@@ -86,7 +86,7 @@ namespace octopus{
         }
     }
 
-    void handle_suscriptionsocket_receiver(net::UDP::addr_t addr, const char* data, size_t len){
+    void handle_suscriptionsocket_receiver(ip4_t addr, const char* data, size_t len){
         if(octopus::networkConfigured){
 
             std::string strdata(data,len);
@@ -120,7 +120,23 @@ namespace octopus{
 
     }
 
+    void handle_publicationsocket_receiver(ip4_t addr, const char* data, size_t len){
+        if(octopus::networkConfigured){
 
+            std::string strdata(data,len);
+
+            Message m(strdata);
+
+            m.debuild();
+
+            CHECK(1, "Publication of topic %s from %s: %s", m.getTopic().c_str(), addr.to_string().c_str(), m.getMessage().c_str());
+
+            addSuscription(addr, strdata);
+
+        }else{
+            std::cout << "**Publication received, but network isn't configured**" << '\n';
+        }
+    }
 
 
     void tryAnnounceServer(){
@@ -181,6 +197,31 @@ namespace octopus{
             std::cout << "====================" << '\n';
 
             update_topics = false;
+        }
+
+
+    }
+
+
+    bool forcePublish(topic_t topic, topic_message_t message){
+        if(octopus::networkConfigured){
+            octoUDPserver* server = octoUDPserver::getInstance();
+            assert(server != nullptr);
+
+            if (! server->publish(topic, message)){
+                std::cout << "Can't publish" << '\n';
+                return false;
+            }
+            return true;
+        }else{
+
+            std::cout << "Can't publish, network not configured" << '\n';
+            Message m(topic, message);
+            Timers::oneshot(1s, [&m] (auto) {
+                forcePublish(m.getTopic(), m.getMessage());
+            });
+
+            return false;
         }
 
 

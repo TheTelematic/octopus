@@ -69,6 +69,10 @@ void Service::ready(){
 
     master_server->suscribe2topic(KEEPALIVE_TOPIC);
 
+    master_server->configPublishment();
+
+    master_server->publish(KEEPALIVE_TOPIC, "Hello my friends");
+
 
 
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';

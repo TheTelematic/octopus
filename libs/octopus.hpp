@@ -87,6 +87,27 @@ namespace octopus{
             });
         }
 
+        bool publish(topic_t topic, topic_message_t message){
+            return forcePublish(topic, message);
+
+        }
+
+        void configPublishment(){
+            assert(server != nullptr);
+
+            auto* ps = server->getPS();
+            ps->on_read( [ps](
+                        net::UDP::addr_t addr,
+                        net::UDP::port_t port,
+                        const char* data,
+                        size_t len
+                        ){
+                            handle_publicationsocket_receiver(addr, data, len);
+                        }
+
+            );
+        }
+
     };
 
 }

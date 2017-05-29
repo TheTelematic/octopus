@@ -19,7 +19,7 @@ namespace octopus{
     class octoUDPserver : public octoNet{
     private:
         DiscoverServer *discoverer;
-        UDPsocket_t* publisherSock;
+        PublisherServer* publisher;
         SuscriberServer* suscriber;
 
         static octoUDPserver *singleton_instance;
@@ -45,7 +45,7 @@ namespace octopus{
 
             auto& tmp2 = this->inet->udp().bind(PUBLISHER_PORT);
 
-            publisherSock = &tmp2;
+            publisher = new PublisherServer(&tmp2);
             printf("Server listening on publisher port %d \n", PUBLISHER_PORT);
 
             auto& tmp3 = this->inet->udp().bind(SUSCRIBER_PORT);
@@ -78,9 +78,9 @@ namespace octopus{
             return discoverer->getSocket();
         }
         UDPsocket_t* getPS(){
-            assert(publisherSock != nullptr);
+            assert(publisher != nullptr);
 
-            return this->publisherSock;
+            return publisher->getSocket();
         }
         UDPsocket_t* getSS(){
             assert(suscriber != nullptr);
@@ -127,6 +127,15 @@ namespace octopus{
 
         topic_list_t getTopicsList(){
             return suscriber->getTopicsList();
+        }
+
+
+        bool publish(topic_t topic, topic_message_t message){
+
+            printf("Pusblishing the message (%s) of %s\n",message.c_str(), topic.c_str());
+
+            return publisher->publish(topic, message, suscriber->getServersOfTopic(topic));
+
         }
 
 

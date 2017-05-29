@@ -37,6 +37,9 @@ namespace octopus{
 
     typedef std::list<topic_list_item_t> topic_list_t;
     typedef std::list<topic_list_item_t>::iterator iterator_tl_t;
+
+    typedef std::string topic_message_t;
+
 }
 
 
