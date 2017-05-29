@@ -208,18 +208,15 @@ namespace octopus{
             octoUDPserver* server = octoUDPserver::getInstance();
             assert(server != nullptr);
 
-            if (! server->publish(topic, message)){
+            // FIXME: THIS CRASH
+            /*if (! server->publish(topic, message)){
                 std::cout << "Can't publish" << '\n';
                 return false;
-            }
+            }*/
             return true;
         }else{
 
             std::cout << "Can't publish, network not configured" << '\n';
-            Message m(topic, message);
-            Timers::oneshot(1s, [&m] (auto) {
-                forcePublish(m.getTopic(), m.getMessage());
-            });
 
             return false;
         }

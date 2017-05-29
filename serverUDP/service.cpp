@@ -67,12 +67,15 @@ void Service::ready(){
 
     master_server->configSuscription();
 
-    master_server->suscribe2topic(KEEPALIVE_TOPIC);
+    master_server->suscribe2topic("TOPIC #1");
 
     master_server->configPublishment();
 
-    master_server->publish(KEEPALIVE_TOPIC, "Hello my friends");
+    //master_server->publish(KEEPALIVE_TOPIC, "Hello my friends");
 
+    Timers::periodic(1s, 1s, [] (auto) {
+        forcePublish("TOPIC #1", "Hello my friends");
+    });
 
 
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';
