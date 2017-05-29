@@ -6,6 +6,7 @@
 namespace octopus{
 
     static bool new_server = false; // Not quite elegant, but it can work
+    static bool update_topics = false;
 
 
     bool announceServer(){
@@ -16,12 +17,7 @@ namespace octopus{
     }
 
 
-    bool addAddrServer(std::string addr){
-        octoUDPserver* server = octoUDPserver::getInstance();
-        assert(server != nullptr);
 
-        return server->addServerAddr(addr);
-    }
 
     void addSuscription(net::UDP::addr_t addr, std::string topic){
 
@@ -30,8 +26,23 @@ namespace octopus{
 
         if(server->addSuscription(addr, topic)){
             std::cout << "Suscribed!" << '\n';
+            update_topics = true;
         }
 
+    }
+
+    bool addAddrServer(std::string addr){
+        octoUDPserver* server = octoUDPserver::getInstance();
+        assert(server != nullptr);
+
+        if( server->addServerAddr(addr)){
+            /*net::UDP::addr_t tmp(addr);
+            addSuscription(tmp, KEEPALIVE_TOPIC); // This will have two duplicate list of the discovered servers TODO: FIXME */
+
+            return true;
+        }else{
+            return false;
+        }
     }
 
 
@@ -145,28 +156,33 @@ namespace octopus{
     }
 
     void showTopics(){
-        octoUDPserver* server = octoUDPserver::getInstance();
-        assert(server != nullptr);
+        if(update_topics){
+            octoUDPserver* server = octoUDPserver::getInstance();
+            assert(server != nullptr);
 
-        topic_list_t topics_list = server->getTopicsList();
+            topic_list_t topics_list = server->getTopicsList();
 
-        std::cout << "TOPICS TABLE" << '\n';
-        std::cout << "====================" << '\n';
-        for(iterator_tl_t it = topics_list.begin(); it != topics_list.end(); it++ ){
+            std::cout << "TOPICS TABLE" << '\n';
+            std::cout << "====================" << '\n';
+            for(iterator_tl_t it = topics_list.begin(); it != topics_list.end(); it++ ){
 
-            std::cout << it->topic << '\n';
-            std::cout << "- - - - - - - - - " << '\n';
+                std::cout << it->topic << '\n';
+                std::cout << "- - - - - - - - - " << '\n';
 
-            for(iterator_ds_t it_2 = it->suscribed_servers.begin(); it_2 != it->suscribed_servers.end(); it_2++ ){
-                std::cout << *it_2 << '\n';
+                for(iterator_ds_t it_2 = it->suscribed_servers.begin(); it_2 != it->suscribed_servers.end(); it_2++ ){
+                    std::cout << *it_2 << '\n';
+
+                }
+
+                std::cout << "- - - - - - - - - " << '\n';
+
 
             }
+            std::cout << "====================" << '\n';
 
-            std::cout << "- - - - - - - - - " << '\n';
-
-
+            update_topics = false;
         }
-        std::cout << "====================" << '\n';
+
 
     }
 

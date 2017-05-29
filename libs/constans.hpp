@@ -15,6 +15,6 @@ namespace octopus{
 
 #define BROADCAST_ADDRESS {255, 255, 255, 255}
 #define BROADCAST_ADDRESS_STR "255.255.255.255"
-
+#define KEEPALIVE_TOPIC "KEEPALIVE"
 
 #endif
