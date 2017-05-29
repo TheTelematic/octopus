@@ -119,6 +119,16 @@ namespace octopus{
 
         }
 
+        bool addSuscription(net::UDP::addr_t addr, std::string topic){
+
+            return suscriber->addSuscription(addr.to_string(), topic);
+
+        }
+
+        topic_list_t getTopicsList(){
+            return suscriber->getTopicsList();
+        }
+
 
     };
 

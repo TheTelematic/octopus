@@ -62,18 +62,17 @@ void Service::ready(){
     master_server->configAnnouncement();
 
     master_server->configShowTableDiscoveredServers();
+    
+    master_server->configShowTopics();
+
+    master_server->configSuscription();
+
+    master_server->suscribe2topic("TOPIC #1");
 
 
 
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';
 }
-
-
-
-/*
-    DEFINITION OF THE FUNCTIONS
-    -------------------------------------------
-*/
 
 
 

@@ -207,12 +207,17 @@ namespace octopus{
                 if(it->topic == topic){
 
                     addServer2Topic(&(*it), ip_server);
+                    return true;
 
                 }
             }
 
             addNewtopic(ip_server, topic);
             return true;
+        }
+
+        topic_list_t getTopicsList(){
+            return topic_list;
         }
 
 

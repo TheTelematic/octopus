@@ -5,7 +5,7 @@
 
 namespace octopus{
 
-    bool new_server = false; // Not quite elegant, but it can work
+    static bool new_server = false; // Not quite elegant, but it can work
 
 
     bool announceServer(){
@@ -23,6 +23,19 @@ namespace octopus{
         return server->addServerAddr(addr);
     }
 
+    void addSuscription(net::UDP::addr_t addr, std::string topic){
+
+        octoUDPserver* server = octoUDPserver::getInstance();
+        assert(server != nullptr);
+
+        if(server->addSuscription(addr, topic)){
+            std::cout << "Suscribed!" << '\n';
+        }
+
+    }
+
+
+
     void showIpAddr(ds_addrs_t ip){
 
         std::cout << ip << '\n';
@@ -30,13 +43,21 @@ namespace octopus{
     }
 
 
+    void handle_suscribe2topic(topic_t topic);
+
+    void retrySuscription(topic_t topic){
+        Timers::oneshot(1s, [topic] (auto) {
+            handle_suscribe2topic(topic);
+        });
+    }
+
 
     void handle_discoversocket_receiver(const char *data, size_t len){
         if(octopus::networkConfigured){
 
             std::string strdata(data,len);
 
-            CHECK(1, "Discovered new server in #%s#", strdata.c_str());
+            CHECK(1, "Discovered new server in %s", strdata.c_str());
 
             if(new_server){
                 if(addAddrServer(strdata)){
@@ -53,6 +74,42 @@ namespace octopus{
             std::cout << "**Discovery received, but network isn't configured**" << '\n';
         }
     }
+
+    void handle_suscriptionsocket_receiver(net::UDP::addr_t addr, const char* data, size_t len){
+        if(octopus::networkConfigured){
+
+            std::string strdata(data,len);
+
+            CHECK(1, "Suscription of topic %s from %s", strdata.c_str(), addr.to_string().c_str());
+
+            addSuscription(addr, strdata);
+
+        }else{
+            std::cout << "**Suscription received, but network isn't configured**" << '\n';
+        }
+    }
+
+    void handle_suscribe2topic(topic_t topic){
+        if(octopus::networkConfigured){
+
+            octoUDPserver* server = octoUDPserver::getInstance();
+            assert(server != nullptr);
+
+            if( !server->suscribe(topic) ){
+                retrySuscription(topic);
+            }
+
+
+        }else{
+
+            std::cout << "-*Cannot suscribe to topic because the network isn't configured yet.*-" << '\n';
+            retrySuscription(topic);
+
+        }
+
+    }
+
+
 
 
     void tryAnnounceServer(){
@@ -84,6 +141,32 @@ namespace octopus{
 
             new_server = false;
         }
+
+    }
+
+    void showTopics(){
+        octoUDPserver* server = octoUDPserver::getInstance();
+        assert(server != nullptr);
+
+        topic_list_t topics_list = server->getTopicsList();
+
+        std::cout << "TOPICS TABLE" << '\n';
+        std::cout << "====================" << '\n';
+        for(iterator_tl_t it = topics_list.begin(); it != topics_list.end(); it++ ){
+
+            std::cout << it->topic << '\n';
+            std::cout << "- - - - - - - - - " << '\n';
+
+            for(iterator_ds_t it_2 = it->suscribed_servers.begin(); it_2 != it->suscribed_servers.end(); it_2++ ){
+                std::cout << *it_2 << '\n';
+
+            }
+
+            std::cout << "- - - - - - - - - " << '\n';
+
+
+        }
+        std::cout << "====================" << '\n';
 
     }
 

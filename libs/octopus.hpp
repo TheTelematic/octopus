@@ -34,7 +34,6 @@ namespace octopus{
         void configDiscovery(){
             assert(server != nullptr);
 
-            std::cout << "THE SERVICE IS READY" << '\n';
             auto* ds = server->getDS();
             ds->on_read( [ds](
                         net::UDP::addr_t addr,
@@ -57,6 +56,34 @@ namespace octopus{
         void configShowTableDiscoveredServers(){
             Timers::periodic(3s, 3s, [] (auto) {
                 showTable();
+            });
+        }
+
+        void configSuscription(){
+            assert(server != nullptr);
+
+            auto* ss = server->getSS();
+            ss->on_read( [ss](
+                        net::UDP::addr_t addr,
+                        net::UDP::port_t port,
+                        const char* data,
+                        size_t len
+                        ){
+                            handle_suscriptionsocket_receiver(addr, data, len);
+                        }
+
+            );
+        }
+
+        void suscribe2topic(topic_t topic){
+
+            handle_suscribe2topic(topic);
+
+        }
+
+        void configShowTopics(){
+            Timers::periodic(3s, 3s, [] (auto) {
+                showTopics();
             });
         }
 
