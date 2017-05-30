@@ -43,3 +43,9 @@
     Ahora toca implementar los protocolos
 
     El de descubrimiento está hecho pero hay que hacer un keepalive. Lo mismo con lo de suscripcion/publicacion me puede servir para tal
+
+
+30/05/17
+
+    POR FIN, ya tengo medianamente montado el prototipo de los protocolos(a excepcion del KEEPALIVE), pero ya se descubren, suscriben y publican
+    unos a otros :DDDDD
