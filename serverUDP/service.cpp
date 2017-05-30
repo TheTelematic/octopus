@@ -67,11 +67,11 @@ void Service::ready(){
 
     master_server->configSuscription();
 
-    master_server->suscribeAfter(5s, "TOPIC #1"); // This failed because there are not servers to send it
+    master_server->configPeriodicSuscribition("TOPIC #1", 5s); // This failed because there are not servers to send it
 
-    //master_server->configPublishment();
+    master_server->configPublishment();
 
-    //master_server->configPeriodicPublication("TOPIC #1", "Hello my friends", 1s);
+    //master_server->configPeriodicPublication("TOPIC #1", "Hello my friends", 3s);
 
 
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';

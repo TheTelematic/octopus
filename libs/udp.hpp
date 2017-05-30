@@ -90,20 +90,24 @@ namespace octopus{
 
 
         bool addServerAddr(ds_addrs_t addr){
+            assert(discoverer != nullptr);
             return discoverer->addServerAddr(addr);
 
         }
 
         void removeServerAddr(ds_addrs_t addr){
+            assert(discoverer != nullptr);
 
             discoverer->removeServerAddr(addr);
         }
 
         discovered_servers_t getServerAddresses(){
+            assert(discoverer != nullptr);
             return discoverer->getServerAddresses();
         }
 
         bool announceServer(){
+            assert(discoverer != nullptr);
             return discoverer->announceServer();
         }
 
@@ -114,23 +118,27 @@ namespace octopus{
         }
 
         bool suscribe(topic_t topic){
-
+            assert(discoverer != nullptr);
+            assert(suscriber != nullptr);
             return suscriber->suscribe(topic, discoverer->getServerAddresses());
 
         }
 
         bool addSuscription(net::UDP::addr_t addr, std::string topic){
-
+            assert(suscriber != nullptr);
             return suscriber->addSuscription(addr.to_string(), topic);
 
         }
 
         topic_list_t getTopicsList(){
+            assert(suscriber != nullptr);
             return suscriber->getTopicsList();
         }
 
 
         bool publish(topic_t topic, topic_message_t message){
+            assert(suscriber != nullptr);
+            assert(publisher != nullptr);
 
             printf("Pusblishing the message (%s) of %s\n",message.c_str(), topic.c_str());
 

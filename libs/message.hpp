@@ -32,7 +32,7 @@ namespace octopus{
             assert(response.size() > 0);
 
             topic = response.substr(0, response.find(SPLITTER));
-            message = response.substr(response.find(SPLITTER), response.size());
+            message = response.substr(response.find(SPLITTER) + SPLITTER.length(), response.size());
 
 
         }

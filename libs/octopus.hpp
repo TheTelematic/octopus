@@ -75,13 +75,19 @@ namespace octopus{
             );
         }
 
-        bool suscribeAfter(Timers::duration_t to, topic_t topic){
+        void suscribeAfter(Timers::duration_t to, topic_t topic){
+
+            Timers::oneshot(to, [topic] (auto) {
+                suscribe_to_topic(topic);
+            });
+        }
+
+        void configPeriodicSuscribition(topic_t topic, Timers::duration_t to){
 
             Timers::periodic(to, to, [topic] (auto) {
                 suscribe_to_topic(topic);
             });
 
-            return true;
         }
 
         void suscribe2topic(topic_t topic){
@@ -102,13 +108,22 @@ namespace octopus{
         }
 
         void configPeriodicPublication(topic_t topic, topic_message_t message, Timers::duration_t to){
-            Message m(topic, message);
+            Message *m = new Message(topic, message);
 
-            Timers::periodic(to, to, [&m] (auto) {
-                forcePublish(m.getTopic(), m.getMessage());
+            Timers::periodic(to, to, [m] (auto) {
+                forcePublish(m->getTopic(), m->getMessage());
             });
 
 
+        }
+
+        void publishAfter(Timers::duration_t to, topic_t topic, topic_message_t message){
+
+            Message *m = new Message(topic, message);
+
+            Timers::oneshot(to, [m] (auto) {
+                forcePublish(m->getTopic(), m->getMessage());
+            });
         }
 
         void configPublishment(){

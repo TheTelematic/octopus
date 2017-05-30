@@ -226,7 +226,10 @@ namespace octopus{
 
         discovered_servers_t getServersOfTopic(topic_t topic){
 
-            assert(topic_list.empty());
+            if(topic_list.empty()){
+                discovered_servers_t tmp;
+                return tmp;
+            }
 
             for(iterator_tl_t it = topic_list.begin(); it != topic_list.end(); it++ ){
 
@@ -235,7 +238,9 @@ namespace octopus{
                 }
             }
 
-            assert(1);
+            std::cout << "AQUI NO DEBERIA LLEGAR" << '\n';
+
+            //assert(1);
             discovered_servers_t tmp;
             return tmp;
         }
@@ -272,6 +277,7 @@ namespace octopus{
             }
 
             return true;
+            std::cout << "PUBLISHED" << '\n';
         }
 
     };

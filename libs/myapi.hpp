@@ -81,6 +81,8 @@ namespace octopus{
         }
     }
 
+    bool forcePublish(topic_t topic, topic_message_t message);
+
     void handle_suscriptionsocket_receiver(ip4_t addr, const char* data, size_t len){
         if(octopus::networkConfigured){
 
@@ -89,6 +91,8 @@ namespace octopus{
             CHECK(1, "Suscription of topic %s from %s", strdata.c_str(), addr.to_string().c_str());
 
             addSuscription(addr, strdata);
+
+            forcePublish(strdata, "Hello guys!");
 
         }else{
             std::cout << "**Suscription received, but network isn't configured**" << '\n';
@@ -101,7 +105,7 @@ namespace octopus{
         if(octopus::networkConfigured){
 
             std::string strdata(data,len);
-
+            //CHECK(1, "Received PUBLICATION: %s", strdata.c_str());
             Message m(strdata);
 
             m.debuild();
@@ -207,12 +211,13 @@ namespace octopus{
             octoUDPserver* server = octoUDPserver::getInstance();
             assert(server != nullptr);
 
+            std::cout << "Sending publication of "<< topic << " : " << message << '\n';
             // FIXME: THIS CRASH
-            /*if (! server->publish(topic, message)){
+            if (! server->publish(topic, message)){
                 std::cout << "Can't publish" << '\n';
                 return false;
-            }*/
-            return true;
+            }
+
         }else{
 
             std::cout << "Can't publish, network not configured" << '\n';
@@ -220,7 +225,7 @@ namespace octopus{
             return false;
         }
 
-
+        return true;
     }
 
 }
