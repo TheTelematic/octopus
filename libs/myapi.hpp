@@ -19,7 +19,7 @@ namespace octopus{
 
 
 
-    void addSuscription(net::UDP::addr_t addr, std::string topic){
+    void addSuscription(ip4_t addr, topic_t topic){
 
         octoUDPserver* server = octoUDPserver::getInstance();
         assert(server != nullptr);
@@ -31,18 +31,11 @@ namespace octopus{
 
     }
 
-    bool addAddrServer(std::string addr){
+    bool addAddrServer(ds_addrs_t addr){
         octoUDPserver* server = octoUDPserver::getInstance();
         assert(server != nullptr);
 
-        if( server->addServerAddr(addr)){
-            /*ip4_t tmp(addr);
-            addSuscription(tmp, KEEPALIVE_TOPIC); // This will have two duplicate list of the discovered servers TODO: FIXME */
-
-            return true;
-        }else{
-            return false;
-        }
+        return server->addServerAddr(addr);
     }
 
 
@@ -54,11 +47,11 @@ namespace octopus{
     }
 
 
-    void handle_suscribe2topic(topic_t topic);
+    void suscribe_to_topic(topic_t topic);
 
     void retrySuscription(topic_t topic){
         Timers::oneshot(1s, [topic] (auto) {
-            handle_suscribe2topic(topic);
+            suscribe_to_topic(topic);
         });
     }
 
@@ -73,11 +66,13 @@ namespace octopus{
             if(new_server){
                 if(addAddrServer(strdata)){
                     announceServer();
+                    //suscribe_to_topic(KEEPALIVE_TOPIC);
                 }
             }else{
                 new_server = addAddrServer(strdata);
                 if(new_server){
                     announceServer();
+                    //suscribe_to_topic(KEEPALIVE_TOPIC);
                 }
             }
 
@@ -100,13 +95,35 @@ namespace octopus{
         }
     }
 
-    void handle_suscribe2topic(topic_t topic){
+
+
+    void handle_publicationsocket_receiver(ip4_t addr, const char* data, size_t len){
+        if(octopus::networkConfigured){
+
+            std::string strdata(data,len);
+
+            Message m(strdata);
+
+            m.debuild();
+
+            CHECK(1, "Publication of topic %s from %s: %s", m.getTopic().c_str(), addr.to_string().c_str(), m.getMessage().c_str());
+
+            //TODO: Process the publication
+
+        }else{
+            std::cout << "**Cannot do a publication, but network isn't configured**" << '\n';
+        }
+    }
+
+    void suscribe_to_topic(topic_t topic){
         if(octopus::networkConfigured){
 
             octoUDPserver* server = octoUDPserver::getInstance();
             assert(server != nullptr);
 
             if( !server->suscribe(topic) ){
+                std::cout << "-*Failed the suscription to "<< topic << " *-" << '\n';
+
                 retrySuscription(topic);
             }
 
@@ -120,25 +137,6 @@ namespace octopus{
 
     }
 
-    void handle_publicationsocket_receiver(ip4_t addr, const char* data, size_t len){
-        if(octopus::networkConfigured){
-
-            std::string strdata(data,len);
-
-            Message m(strdata);
-
-            m.debuild();
-
-            CHECK(1, "Publication of topic %s from %s: %s", m.getTopic().c_str(), addr.to_string().c_str(), m.getMessage().c_str());
-
-            addSuscription(addr, strdata);
-
-        }else{
-            std::cout << "**Publication received, but network isn't configured**" << '\n';
-        }
-    }
-
-
     void tryAnnounceServer(){
         if( !announceServer()){
 
@@ -147,6 +145,7 @@ namespace octopus{
             });
 
         }
+
     }
 
     void showTable(){

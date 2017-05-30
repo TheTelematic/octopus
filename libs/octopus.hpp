@@ -75,9 +75,18 @@ namespace octopus{
             );
         }
 
+        bool suscribeAfter(Timers::duration_t to, topic_t topic){
+
+            Timers::periodic(to, to, [topic] (auto) {
+                suscribe_to_topic(topic);
+            });
+
+            return true;
+        }
+
         void suscribe2topic(topic_t topic){
 
-            handle_suscribe2topic(topic);
+            suscribe_to_topic(topic);
 
         }
 
@@ -89,6 +98,16 @@ namespace octopus{
 
         bool publish(topic_t topic, topic_message_t message){
             return forcePublish(topic, message);
+
+        }
+
+        void configPeriodicPublication(topic_t topic, topic_message_t message, Timers::duration_t to){
+            Message m(topic, message);
+
+            Timers::periodic(to, to, [&m] (auto) {
+                forcePublish(m.getTopic(), m.getMessage());
+            });
+
 
         }
 

@@ -67,15 +67,11 @@ void Service::ready(){
 
     master_server->configSuscription();
 
-    master_server->suscribe2topic("TOPIC #1");
+    master_server->suscribeAfter(5s, "TOPIC #1"); // This failed because there are not servers to send it
 
-    master_server->configPublishment();
+    //master_server->configPublishment();
 
-    //master_server->publish(KEEPALIVE_TOPIC, "Hello my friends");
-
-    Timers::periodic(1s, 1s, [] (auto) {
-        forcePublish("TOPIC #1", "Hello my friends");
-    });
+    //master_server->configPeriodicPublication("TOPIC #1", "Hello my friends", 1s);
 
 
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';

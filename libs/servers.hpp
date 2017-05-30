@@ -114,9 +114,9 @@ namespace octopus{
 
 
 
-        const char* topic_t2charptr(const topic_t topic){
+        std::string topic_t2str(const topic_t topic){
 
-            return topic.c_str();
+            return topic;
         }
 
         int sizeTopic(topic_t topic){
@@ -127,7 +127,7 @@ namespace octopus{
 
             ip4_t ip(addr);
 
-            this->sendto(ip, SUSCRIBER_PORT, topic_t2charptr(topic), sizeTopic(topic));
+            this->sendto(ip, SUSCRIBER_PORT, topic_t2str(topic).c_str(), sizeTopic(topic));
 
         }
 
@@ -170,6 +170,8 @@ namespace octopus{
                 if(discovered_servers.size() == 0){
                     std::cout << "-*Can't suscribe to the topic because there are no servers to send it*-" << '\n';
                     return false;
+                }else{
+                    std::cout << "Suscribing..." << '\n';
                 }
 
                 UDPsocket_t *suscriberSock = this->getSocket();
@@ -178,7 +180,7 @@ namespace octopus{
 
                     std::string receiver = getStrIpAddr(*it);
 
-                    printf("Sending suscription of %s to %s -> ", topic_t2charptr(topic), receiver.c_str() );
+                    printf("Sending suscription of %s to %s -> ", topic_t2str(topic).c_str(), receiver.c_str() );
 
                     sendSuscription(topic, receiver);
 
