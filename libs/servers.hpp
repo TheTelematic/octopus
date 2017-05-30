@@ -140,17 +140,18 @@ namespace octopus{
             topic_list.push_back(new_topic);
         }
 
-        void addServer2Topic(topic_list_item_t *item, ds_addrs_t ip_server){
+        bool addServer2Topic(topic_list_item_t *item, ds_addrs_t ip_server){
 
             for(iterator_ds_t it = item->suscribed_servers.begin(); it != item->suscribed_servers.end(); it++ ){
                 if(*it == ip_server){
 
-                    return;
+                    return false;
 
                 }
             }
             item->suscribed_servers.push_back(ip_server);
 
+            return true;
         }
 
 
@@ -209,8 +210,7 @@ namespace octopus{
             for(iterator_tl_t it = topic_list.begin(); it != topic_list.end(); it++ ){
                 if(it->topic == topic){
 
-                    addServer2Topic(&(*it), ip_server);
-                    return true;
+                    return addServer2Topic(&(*it), ip_server);
 
                 }
             }
