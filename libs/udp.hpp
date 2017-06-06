@@ -22,8 +22,6 @@ namespace octopus{
         PublisherServer* publisher;
         SuscriberServer* suscriber;
 
-        static octoUDPserver *singleton_instance;
-
 
         std::string getStrIpAddr(const ds_addrs_t addr)const{
 
@@ -33,7 +31,7 @@ namespace octopus{
 
 
 
-    protected:
+    public:
         octoUDPserver () : octoNet(){
 
             auto& tmp = this->inet->udp().bind(DISCOVER_PORT);
@@ -52,16 +50,6 @@ namespace octopus{
 
             suscriber = new SuscriberServer(&tmp3);
             printf("Server listening on suscriber port %d \n", SUSCRIBER_PORT);
-
-        }
-
-    public:
-
-        static octoUDPserver* getInstance(){
-
-            if(singleton_instance == nullptr) singleton_instance = new octoUDPserver;
-
-            return singleton_instance;
 
         }
 

@@ -58,7 +58,7 @@ def write_vmx(instance_path, servicename):
 	vmx = """.encoding = "UTF-8"
 config.version = "8"
 virtualHW.version = "11"
-memsize = "640"
+memsize = "64"
 ide0:0.present = "TRUE"
 ide0:0.fileName = "{path}"
 ide1:0.present = "TRUE"

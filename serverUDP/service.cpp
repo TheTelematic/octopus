@@ -17,26 +17,15 @@
 
 //IncludeOS's libs
 #include <os>
-
-
+#include <iostream>
 
 //My libs
-#include "../libs/udp.hpp"
-#include "../libs/octopus.hpp"
+#include "../octopusAPI.hpp"
 
 
 using namespace std;
 using namespace octopus;
 
-
-/*
-    GLOBAL VARIABLES
-    -------------------------------------------
-
-    How IncludeOS is in one processor and one only thread, global variables it's not a big risky.
-    Because the functions of timers or of handlers are going to do all, before another function went executed
-*/
-Octopus* Octopus::singleton = nullptr;
 
 /*
     MAIN FUNCTIONS
@@ -55,23 +44,7 @@ void Service::start(){
 void Service::ready(){
     cout << "THE SERVICE IS READY" << endl;
 
-    Octopus *master_server = Octopus::getInstance();
-
-    master_server->configDiscovery();
-
-    master_server->configAnnouncement();
-
-    master_server->configShowTableDiscoveredServers();
-
-    master_server->configShowTopics();
-
-    master_server->configSuscription();
-
-    master_server->configPeriodicSuscribition("TOPIC #1", 5s); // This failed because there are not servers to send it
-
-    master_server->configPublishment();
-
-    //master_server->configPeriodicPublication("TOPIC #1", "Hello my friends", 3s);
+    octopusAPI* api = new octopusAPI();
 
 
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';

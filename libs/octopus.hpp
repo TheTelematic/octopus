@@ -5,36 +5,26 @@
 
 #include "myapi.hpp"
 #include "udp.hpp"
-
+#include "tcp.hpp"
 
 namespace octopus{
-
-    octoUDPserver* octoUDPserver::singleton_instance = nullptr;
+    static octoTCPserver* __octoTCP_server;
 
     class Octopus{
-    private:
-        octoUDPserver* server;
-
-        static Octopus *singleton;
-
-        Octopus(){
-            server = octoUDPserver::getInstance();
-        }
 
     public:
-
-        static Octopus* getInstance(){
-            if(singleton == nullptr) singleton = new Octopus();
-
-            return singleton;
-
+        Octopus(){
+            octopus::__octoUDP_server = new octoUDPserver();
+            octopus::__octoTCP_server = new octoTCPserver();
         }
+
+
 
 
         void configDiscovery(){
-            assert(server != nullptr);
+            assert(__octoUDP_server != nullptr);
 
-            auto* ds = server->getDS();
+            auto* ds = __octoUDP_server->getDS();
             ds->on_read( [ds](
                         net::UDP::addr_t addr,
                         net::UDP::port_t port,
@@ -60,9 +50,9 @@ namespace octopus{
         }
 
         void configSuscription(){
-            assert(server != nullptr);
+            assert(__octoUDP_server != nullptr);
 
-            auto* ss = server->getSS();
+            auto* ss = __octoUDP_server->getSS();
             ss->on_read( [ss](
                         net::UDP::addr_t addr,
                         net::UDP::port_t port,
@@ -127,9 +117,9 @@ namespace octopus{
         }
 
         void configPublishment(){
-            assert(server != nullptr);
+            assert(__octoUDP_server != nullptr);
 
-            auto* ps = server->getPS();
+            auto* ps = __octoUDP_server->getPS();
             ps->on_read( [ps](
                         net::UDP::addr_t addr,
                         net::UDP::port_t port,
@@ -140,6 +130,28 @@ namespace octopus{
                         }
 
             );
+        }
+
+        void configTCPconnection(){
+            assert(__octoTCP_server != nullptr);
+
+            auto* socket = __octoTCP_server->getSocket();
+
+            socket->on_connect(
+                [socket] (Connection_ptr client) {
+                      printf("Connected [Client]: %s\n", client->to_string().c_str());
+
+                      client->on_read(1024, [client](auto buf, size_t n) {
+                          std::string data{ (char*)buf.get(), n };
+
+                          printf("Recibido: %s\n", data.c_str());
+                          client->write(data + "<");
+                      });
+
+                      client->on_disconnect([client](Connection_ptr, Disconnect reason) {
+                          printf("Disconnected [Client]: %s\n", reason.to_string().c_str());
+                      });
+            });
         }
 
     };

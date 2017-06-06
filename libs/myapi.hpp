@@ -7,10 +7,12 @@ namespace octopus{
 
     static bool new_server = false; // Not quite elegant, but it can work
     static bool update_topics = false;
+    static octoUDPserver* __octoUDP_server;
+    
 
 
     bool announceServer(){
-        octoUDPserver* server = octoUDPserver::getInstance();
+        auto &server = octopus::__octoUDP_server;
         assert(server != nullptr);
 
         return server->announceServer();
@@ -21,7 +23,7 @@ namespace octopus{
 
     void addSuscription(ip4_t addr, topic_t topic){
 
-        octoUDPserver* server = octoUDPserver::getInstance();
+        auto &server = octopus::__octoUDP_server;
         assert(server != nullptr);
 
         if(server->addSuscription(addr, topic)){
@@ -32,7 +34,7 @@ namespace octopus{
     }
 
     bool addAddrServer(ds_addrs_t addr){
-        octoUDPserver* server = octoUDPserver::getInstance();
+        auto &server = octopus::__octoUDP_server;
         assert(server != nullptr);
 
         return server->addServerAddr(addr);
@@ -122,7 +124,7 @@ namespace octopus{
     void suscribe_to_topic(topic_t topic){
         if(octopus::networkConfigured){
 
-            octoUDPserver* server = octoUDPserver::getInstance();
+            auto &server = octopus::__octoUDP_server;
             assert(server != nullptr);
 
             if( !server->suscribe(topic) ){
@@ -155,7 +157,7 @@ namespace octopus{
     void showTable(){
 
         if (new_server) {
-            octoUDPserver* server = octoUDPserver::getInstance();
+            auto &server = octopus::__octoUDP_server;
             assert(server != nullptr);
             discovered_servers_t list_of_addresses = server->getServerAddresses();
 
@@ -176,7 +178,7 @@ namespace octopus{
 
     void showTopics(){
         if(update_topics){
-            octoUDPserver* server = octoUDPserver::getInstance();
+            auto &server = octopus::__octoUDP_server;
             assert(server != nullptr);
 
             topic_list_t topics_list = server->getTopicsList();
@@ -208,7 +210,7 @@ namespace octopus{
 
     bool forcePublish(topic_t topic, topic_message_t message){
         if(octopus::networkConfigured){
-            octoUDPserver* server = octoUDPserver::getInstance();
+            auto &server = octopus::__octoUDP_server;
             assert(server != nullptr);
 
             std::cout << "Sending publication of "<< topic << " : " << message << '\n';
@@ -227,7 +229,6 @@ namespace octopus{
 
         return true;
     }
-
 }
 
 #endif

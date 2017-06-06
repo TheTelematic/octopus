@@ -20,14 +20,14 @@ namespace octopus{
         TCPserver_t* server;
 
     public:
-        octoTCPserver (uint16_t port = 5050, new_configIPv4_t* nw = defaultNetConfig()) : octoNet(nw){
+        octoTCPserver (uint16_t port = 5050) : octoNet(){
 
             //this->changeNetConfig(nw);
 
-            auto& tmp = this->inet->tcp().bind(port);
+            auto& tmp = this->inet->tcp().listen(port);
 
             server = &tmp;
-            printf("Server listening: %s \n", this->server->local().to_string().c_str());
+            printf("TCP Server listening: %d \n", port);
 
         }
 
