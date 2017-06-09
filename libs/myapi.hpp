@@ -3,6 +3,8 @@
 #include "types.hpp"
 #include "udp.hpp"
 #include "commandsTCP.hpp"
+#include "protocol_messages.hpp"
+#include "utils.hpp"
 
 namespace octopus{
 
@@ -107,12 +109,15 @@ namespace octopus{
         if(octopus::networkConfigured){
 
             std::string strdata(data,len);
+
+            processMessageOfProtocol(addr.to_string(), strdata);
+
             //CHECK(1, "Received PUBLICATION: %s", strdata.c_str());
-            Message m(strdata);
+            //Message m(strdata);
 
-            m.debuild();
+            //m.debuild();
 
-            CHECK(1, "Publication of topic %s from %s: %s", m.getTopic().c_str(), addr.to_string().c_str(), m.getMessage().c_str());
+            //CHECK(1, "Publication of topic %s from %s: %s", m.getTopic().c_str(), addr.to_string().c_str(), m.getMessage().c_str());
 
             //TODO: Process the publication
 
@@ -255,14 +260,7 @@ namespace octopus{
         // End
     }
 
-    std::vector<std::string> split(const string& input, const string& regex) {
-        // passing -1 as the submatch index parameter performs splitting
-        std::regex re(regex);
-        std::sregex_token_iterator
-            first{input.begin(), input.end(), re, -1},
-            last;
-        return {first, last};
-    }
+
 
 
     int process_request(std::string request){

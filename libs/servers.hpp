@@ -313,10 +313,9 @@ namespace octopus{
         }
 
         void announceTopicCreated(topic_t topic){
-            std::string announce = "";
-            announce += TOPIC_IS_CREATED;
-            announce += SEPARATOR;
-            announce += topic;
+
+
+            std::string announce = getMessageTopicCreated(topic);
 
             this->sendto(BROADCAST_ADDRESS, PUBLISHER_PORT, announce.c_str(), announce.size());
 
