@@ -99,13 +99,10 @@ namespace octopus{
             return discoverer->announceServer();
         }
 
-        // TODO
-        void testAliveServers(){
 
-
-        }
 
         bool suscribe(topic_t topic){
+            //FIXME TO THE NEW PROTOCOL
             assert(discoverer != nullptr);
             assert(suscriber != nullptr);
             return suscriber->suscribe(topic, discoverer->getServerAddresses());
@@ -113,18 +110,21 @@ namespace octopus{
         }
 
         bool addSuscription(net::UDP::addr_t addr, std::string topic){
+            //FIXME TO THE NEW PROTOCOL
             assert(suscriber != nullptr);
             return suscriber->addSuscription(addr.to_string(), topic);
 
         }
 
         topic_list_t getTopicsList(){
+            //FIXME TO THE NEW PROTOCOL
             assert(suscriber != nullptr);
             return suscriber->getTopicsList();
         }
 
 
         bool publish(topic_t topic, topic_message_t message){
+            //FIXME TO THE NEW PROTOCOL
             assert(suscriber != nullptr);
             assert(publisher != nullptr);
 
@@ -134,6 +134,28 @@ namespace octopus{
 
         }
 
+        size_t create_topic(topic_t topic){
+            assert(publisher != nullptr);
+
+            printf("Creating the topic...\n");
+
+            size_t value_hash = publisher->create_topic(topic);
+
+            if( value_hash == 0) printf("Already exists\n");
+            printf("Created. Its hash is:\n");
+            printf("%zu\n", value_hash);
+
+            return value_hash;
+        }
+
+        void announceTopicCreated(topic_t topic){
+            assert(publisher != nullptr);
+
+            printf("Announcing the topic %s\n",topic.c_str());
+
+            publisher->announceTopicCreated(topic);
+
+        }
 
     };
 

@@ -36,7 +36,11 @@ namespace octopus{
             master_server.configTCPconnection();
         }
 
-        void create_topic(topic_t topic);
+        void create_topic(topic_t topic){
+
+            master_server.create_topic(topic);
+
+        }
         void suscribe_to_topic(topic_t topic);
         void publish(Message message);
 

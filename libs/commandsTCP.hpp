@@ -1,0 +1,3 @@
+#ifndef CREATE_TOPIC
+#define CREATE_TOPIC "CREATE_TOPIC"
+#endif

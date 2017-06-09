@@ -2,6 +2,7 @@
 #define __MYAPI__HPP
 #include "types.hpp"
 #include "udp.hpp"
+#include "commandsTCP.hpp"
 
 namespace octopus{
 
@@ -176,6 +177,8 @@ namespace octopus{
     }
 
     void showTopics(){
+        //FIXME TO THE NEW PROTOCOL
+        /*
         if(update_topics){
             auto &server = octopus::__octoUDP_server;
             assert(server != nullptr);
@@ -201,7 +204,7 @@ namespace octopus{
             std::cout << "====================" << '\n';
 
             update_topics = false;
-        }
+        }*/
 
 
     }
@@ -229,11 +232,63 @@ namespace octopus{
         return true;
     }
 
+    void announceTopicCreated(topic_t topic){
+        auto &server = octopus::__octoUDP_server;
+        assert(server != nullptr);
+
+        server->announceTopicCreated(topic);
+
+    }
+
+
+    void createTopic(topic_t topic){
+        auto &server = octopus::__octoUDP_server;
+        assert(server != nullptr);
+        //Create the entry in the table, and put the value "any_server_suscribed" to false
+        server->create_topic(topic);
+
+        // Publish to the rest that exists that topic with the UUID(hash of the name)
+        Timers::periodic(1s, 1s, [topic] (auto) {
+            announceTopicCreated(topic);
+        });
+
+        // End
+    }
+
+    std::vector<std::string> split(const string& input, const string& regex) {
+        // passing -1 as the submatch index parameter performs splitting
+        std::regex re(regex);
+        std::sregex_token_iterator
+            first{input.begin(), input.end(), re, -1},
+            last;
+        return {first, last};
+    }
+
+
+    int process_request(std::string request){
+
+        std::vector<std::string> parameters = split(request, " ");
+
+
+        if(parameters[0] == CREATE_TOPIC){
+            if(parameters.size() != 2){
+                return -1;
+            }
+            createTopic(parameters[1]);
+
+            return 0;
+        }else{
+            return -1;
+        }
+
+    }
+
 
     void handle_tcpconnection(net::tcp::Connection_ptr client, const std::string data){
 
         printf("-> %s\n", data.c_str() );
 
+        if(process_request(data) == -1) client->write("Error in the command\n");
 
         client->write("> ");
     }

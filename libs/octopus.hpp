@@ -155,6 +155,9 @@ namespace octopus{
             });
         }
 
+        void create_topic(topic_t topic){
+            createTopic(topic);
+        }
     };
 
 }

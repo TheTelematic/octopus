@@ -4,6 +4,7 @@
 #include "types.hpp"
 #include "constans.hpp"
 #include "message.hpp"
+#include "protocol_messages.hpp"
 
 namespace octopus{
     class GenericUDPServer{
@@ -110,8 +111,6 @@ namespace octopus{
 
     private:
 
-        topic_list_t topic_list;
-
 
 
         std::string topic_t2str(const topic_t topic){
@@ -124,34 +123,21 @@ namespace octopus{
         }
 
         void sendSuscription(topic_t topic, ds_addrs_t addr){
+            //FIXME TO THE NEW PROTOCOL
+            /*ip4_t ip(addr);
 
-            ip4_t ip(addr);
-
-            this->sendto(ip, SUSCRIBER_PORT, topic_t2str(topic).c_str(), sizeTopic(topic));
+            this->sendto(ip, SUSCRIBER_PORT, topic_t2str(topic).c_str(), sizeTopic(topic));*/
 
         }
 
         void addNewtopic(ds_addrs_t ip_server, topic_t topic){
-            topic_list_item_t new_topic;
+            //FIXME TO THE NEW PROTOCOL
+            /*topic_list_item_t new_topic;
 
             new_topic.topic = topic;
             new_topic.suscribed_servers.push_back(ip_server);
 
-            topic_list.push_back(new_topic);
-        }
-
-        bool addServer2Topic(topic_list_item_t *item, ds_addrs_t ip_server){
-
-            for(iterator_ds_t it = item->suscribed_servers.begin(); it != item->suscribed_servers.end(); it++ ){
-                if(*it == ip_server){
-
-                    return false;
-
-                }
-            }
-            item->suscribed_servers.push_back(ip_server);
-
-            return true;
+            topic_list.push_back(new_topic);*/
         }
 
 
@@ -159,7 +145,8 @@ namespace octopus{
         SuscriberServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
 
         bool suscribe(topic_t topic, discovered_servers_t discovered_servers){
-            if( !octopus::networkConfigured ){
+            //FIXME TO THE NEW PROTOCOL
+            /*if( !octopus::networkConfigured ){
 
                 std::cout << "-*Can't suscribe to the topic because the network isn't configured*-" << '\n';
                 return false;
@@ -191,14 +178,16 @@ namespace octopus{
                 }
 
 
-            }
+            }*/
 
             return true;
 
         }
 
         bool addSuscription(ds_addrs_t ip_server, topic_t topic){
+            //FIXME TO THE NEW PROTOCOL
 
+            /*
 
 
             if(topic_list.empty()){
@@ -216,15 +205,18 @@ namespace octopus{
             }
 
             addNewtopic(ip_server, topic);
-            return true;
+            return true;*/
         }
 
         topic_list_t getTopicsList(){
-            return topic_list;
+            //FIXME TO THE NEW PROTOCOL
+            //return topic_list;
         }
 
 
         discovered_servers_t getServersOfTopic(topic_t topic){
+            //FIXME TO THE NEW PROTOCOL
+            /*
 
             if(topic_list.empty()){
                 discovered_servers_t tmp;
@@ -242,7 +234,7 @@ namespace octopus{
 
             //assert(1);
             discovered_servers_t tmp;
-            return tmp;
+            return tmp;*/
         }
 
 
@@ -251,6 +243,17 @@ namespace octopus{
 
     class PublisherServer : public GenericUDPServer{
     private:
+
+        topic_list_t created_topics;
+
+        void addNewTopic(topic_t topic){
+            topic_list_item_t new_topic;
+
+            new_topic.topic = topic;
+            new_topic.any_server_suscribed = false;
+
+            this->created_topics.push_back(new_topic);
+        }
 
     public:
         PublisherServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
@@ -278,6 +281,45 @@ namespace octopus{
 
             return true;
             std::cout << "PUBLISHED" << '\n';
+        }
+
+
+        size_t create_topic(topic_t topic){
+
+            if(this->created_topics.empty()){
+                addNewTopic(topic);
+
+            }else{
+                for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
+                    if(it->topic == topic){
+                        std::cout << "Topic already exists" << '\n';
+                        return 0;
+                    }
+
+                }
+
+                addNewTopic(topic);
+            }
+
+            std::hash<topic_t> hash;
+
+            size_t value_hash = hash(topic);
+
+
+
+
+            return value_hash;
+
+        }
+
+        void announceTopicCreated(topic_t topic){
+            std::string announce = "";
+            announce += TOPIC_IS_CREATED;
+            announce += SEPARATOR;
+            announce += topic;
+
+            this->sendto(BROADCAST_ADDRESS, PUBLISHER_PORT, announce.c_str(), announce.size());
+
         }
 
     };
