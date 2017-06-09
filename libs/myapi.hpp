@@ -8,7 +8,6 @@ namespace octopus{
     static bool new_server = false; // Not quite elegant, but it can work
     static bool update_topics = false;
     static octoUDPserver* __octoUDP_server;
-    
 
 
     bool announceServer(){
@@ -228,6 +227,15 @@ namespace octopus{
         }
 
         return true;
+    }
+
+
+    void handle_tcpconnection(net::tcp::Connection_ptr client, const std::string data){
+
+        printf("-> %s\n", data.c_str() );
+
+
+        client->write("> ");
     }
 }
 
