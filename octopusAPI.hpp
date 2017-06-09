@@ -32,6 +32,8 @@ namespace octopus{
             master_server.configShowTableDiscoveredServers();
 
             master_server.configShowTopics();
+
+            master_server.configTCPconnection();
         }
 
         void create_topic(topic_t topic);
