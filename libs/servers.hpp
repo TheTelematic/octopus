@@ -301,14 +301,12 @@ namespace octopus{
                 addNewTopic(topic);
             }
 
-            std::hash<topic_t> hash;
-
-            size_t value_hash = hash(topic);
 
 
 
 
-            return value_hash;
+
+            return doHash(topic);
 
         }
 

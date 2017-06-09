@@ -253,7 +253,7 @@ namespace octopus{
         server->create_topic(topic);
 
         // Publish to the rest that exists that topic with the UUID(hash of the name)
-        Timers::periodic(1s, 1s, [topic] (auto) {
+        Timers::periodic(1s, 5s, [topic] (auto) {
             announceTopicCreated(topic);
         });
 

@@ -141,7 +141,7 @@ namespace octopus{
                 [socket] (Connection_ptr client) {
                       printf("Connected [Client]: %s\n", client->to_string().c_str());
 
-                      client->write("Welcome to Octopus!\n\n >");
+                      client->write("Welcome to Octopus!\n\n> ");
 
                       client->on_read(1024, [client](auto buf, size_t n) {
                           std::string data{ (char*)buf.get(), n };

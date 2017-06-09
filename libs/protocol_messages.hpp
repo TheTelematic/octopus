@@ -4,7 +4,7 @@
 
 
 #ifndef SEPARATOR
-#define SEPARATOR "//\\\\"
+#define SEPARATOR "//"
 #endif
 
 #ifndef TOPIC_IS_CREATED
@@ -16,6 +16,13 @@
 
 namespace octopus{
 
+    size_t doHash(topic_t topic){
+        std::hash<topic_t> hash;
+
+        return hash(topic);
+
+    }
+
 
 
     void processMessageOfProtocol(std::string addr, std::string message_received){
@@ -26,7 +33,12 @@ namespace octopus{
 
             if(v.size() != 2) printf("----------$%&&/---------ERROR IN PROTOCOL------------$%&&/-----\n");
 
-            printf("Topic created by %s: %s\n", addr.c_str(),  v[1].c_str());
+            topic_t topic = v[1];
+            topic.substr(1);
+
+            printf("Topic created by %s: %s\n", addr.c_str(), topic.c_str() );
+            printf("Hash: %zu\n", doHash(topic));
+
 
         }else{
 
