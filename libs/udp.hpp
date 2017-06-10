@@ -157,6 +157,16 @@ namespace octopus{
 
         }
 
+        void savePublisher(std::string addr, size_t value_hash){
+
+            assert(suscriber != nullptr);
+
+
+
+            if(suscriber->addPublisher(addr, value_hash)) printf("Saved the publisher...\n");
+            else printf("(already exists)\n");
+        }
+
     };
 
 

@@ -111,6 +111,7 @@ namespace octopus{
 
     private:
 
+        publishers_list_t publishers_list;
 
 
         std::string topic_t2str(const topic_t topic){
@@ -130,14 +131,49 @@ namespace octopus{
 
         }
 
-        void addNewtopic(ds_addrs_t ip_server, topic_t topic){
-            //FIXME TO THE NEW PROTOCOL
-            /*topic_list_item_t new_topic;
+        void addNewtopic(std::string addr, size_t value_hash){
 
-            new_topic.topic = topic;
-            new_topic.suscribed_servers.push_back(ip_server);
+            publisher_item_list_t new_item;
 
-            topic_list.push_back(new_topic);*/
+            new_item.hash_of_topic = value_hash;
+
+            std::list<std::string> tmp;
+            new_item.addrs_publisher.push_back(addr);
+
+
+            publishers_list.push_back(new_item);
+        }
+
+        bool savePublisher(std::string addr, size_t value_hash){
+
+            if(publishers_list.empty()){
+                addNewtopic(addr, value_hash);
+
+                return true;
+            }else{
+
+
+                for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++ ){
+                    if(it->hash_of_topic == value_hash){
+
+                        for(iterator_string_t it2 = it->addrs_publisher.begin(); it2 != it->addrs_publisher.end(); it2++ ){
+
+                            if(*it2 == addr){
+                                return false;
+                            }
+
+                        }
+
+                        it->addrs_publisher.push_back(addr);
+                        return true;
+                    }
+                }
+
+                addNewtopic(addr, value_hash);
+
+                return true;
+            }
+
         }
 
 
@@ -235,6 +271,12 @@ namespace octopus{
             //assert(1);
             discovered_servers_t tmp;
             return tmp;*/
+        }
+
+        bool addPublisher(std::string addr, size_t value_hash){
+
+            return savePublisher(addr, value_hash);
+
         }
 
 

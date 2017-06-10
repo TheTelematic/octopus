@@ -110,16 +110,18 @@ namespace octopus{
 
             std::string strdata(data,len);
 
-            processMessageOfProtocol(addr.to_string(), strdata);
+            size_t value_hash = processPublication(addr.to_string(), strdata);
+            if(value_hash != 0){
+                auto &server = octopus::__octoUDP_server;
+                assert(server != nullptr);
 
-            //CHECK(1, "Received PUBLICATION: %s", strdata.c_str());
-            //Message m(strdata);
+                server->savePublisher(addr.to_string(), value_hash);
+            }else{
+                printf("Process of publication failed\n");
+            }
 
-            //m.debuild();
 
-            //CHECK(1, "Publication of topic %s from %s: %s", m.getTopic().c_str(), addr.to_string().c_str(), m.getMessage().c_str());
 
-            //TODO: Process the publication
 
         }else{
             std::cout << "**Cannot do a publication, but network isn't configured**" << '\n';

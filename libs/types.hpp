@@ -40,6 +40,15 @@ namespace octopus{
 
     typedef std::string topic_message_t;
 
+    typedef struct{
+        std::list<std::string> addrs_publisher;
+        size_t hash_of_topic;
+    }publisher_item_list_t;
+
+    typedef std::list<publisher_item_list_t> publishers_list_t;
+    typedef std::list<publisher_item_list_t>::iterator iterator_publishers_t;
+    typedef std::list<std::string>::iterator iterator_string_t;
+
 }
 
 

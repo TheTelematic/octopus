@@ -13,6 +13,7 @@
 
 #include "types.hpp"
 #include "utils.hpp"
+#include "udp.hpp"
 
 namespace octopus{
 
@@ -25,7 +26,7 @@ namespace octopus{
 
 
 
-    void processMessageOfProtocol(std::string addr, std::string message_received){
+    size_t processPublication(std::string addr, std::string message_received){
 
         std::vector<std::string> v = split(message_received, SEPARATOR);
 
@@ -36,12 +37,18 @@ namespace octopus{
             topic_t topic = v[1];
             topic.substr(1);
 
+            size_t value_hash = doHash(topic);
+
             printf("Topic created by %s: %s\n", addr.c_str(), topic.c_str() );
-            printf("Hash: %zu\n", doHash(topic));
+            printf("Hash: %zu\n", value_hash);
+
+            return value_hash;
+
+
 
 
         }else{
-
+            return 0;
         }
 
     }
