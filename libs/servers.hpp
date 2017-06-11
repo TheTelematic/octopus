@@ -139,6 +139,7 @@ namespace octopus{
 
             std::list<std::string> tmp;
             new_item.addrs_publisher.push_back(addr);
+            new_item.suscribed = false;
 
 
             publishers_list.push_back(new_item);
@@ -281,18 +282,19 @@ namespace octopus{
 
         bool publish(topic_t topic, topic_message_t message){
 
-            printf("TOPIC: %s-\n", topic.c_str());
+            //printf("TOPIC: %s-\n", topic.c_str());
+            //printf("MESSAGE: %s-%lu-%lu\n", message.c_str(), message.size(), message.length());
             size_t value_hash = doHash(topic);
 
-            printf("TARGET hash topic: %zu\n", value_hash);
+            //printf("TARGET hash topic: %zu\n", value_hash);
             for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
-                printf("Saved hash topic: %zu\n", it->hash_of_topic);
+                //printf("Saved hash topic: %zu\n", it->hash_of_topic);
                 if(it->hash_of_topic == value_hash){
                     if(it->any_server_suscribed > 0){
 
-                        std::string message = getMessagePublication(topic, message);
+                        std::string message_ = getMessagePublication(topic, message);
 
-                        this->sendto(BROADCAST_ADDRESS, PUBLISHER_PORT, message.c_str(), message.size());
+                        this->sendto(BROADCAST_ADDRESS, PUBLISHER_PORT, message_.c_str(), message_.size());
 
                         return true;
 

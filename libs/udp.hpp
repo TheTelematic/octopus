@@ -126,7 +126,7 @@ namespace octopus{
 
             assert(publisher != nullptr);
 
-            printf("Publishing the message (%s) of %s\n",message.c_str(), topic.c_str());
+            //printf("Publishing the message (%s) of %s\n",message.c_str(), topic.c_str());
 
             return publisher->publish(topic, message);
 

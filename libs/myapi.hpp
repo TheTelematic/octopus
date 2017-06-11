@@ -311,7 +311,7 @@ namespace octopus{
                 return -2;
             }
             topic_t topic = parameters[2].substr(0, parameters[2].size() - 1);
-            topic_message_t message = parameters[1].substr(0, parameters[1].size() - 1);
+            topic_message_t message = parameters[1];//.substr(0, parameters[1].size() - 1);
 
             publish_a_message(topic, message);
 

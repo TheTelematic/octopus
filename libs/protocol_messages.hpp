@@ -51,7 +51,7 @@ namespace octopus{
 
         if(v[0] == TOPIC_IS_CREATED){
 
-            if(v.size() != 2) printf("----------$%&&/---------ERROR IN PROTOCOL------------$%&&/-----\n");
+            if(v.size() != 2) printf("----------###/---------ERROR IN PROTOCOL------------###/-----\n");
 
             topic_t topic = v[1];
             topic.substr(1);
@@ -73,16 +73,16 @@ namespace octopus{
 
         }else if(v[0] == PUBLICATION){
 
-            if(v.size() != 3) printf("----------$%&&/---------ERROR IN PROTOCOL------------$%&&/-----\n");
+            if(v.size() != 3) printf("----------###/---------ERROR IN PROTOCOL------------###/-----\n");
 
             topic_t topic = v[1];
             topic.substr(1);
 
             topic_message_t message = v[2];
-            message.substr(1);
+            //message.substr(1);
+            //printf("Message received: %s\n", message_received.c_str());
 
-
-            printf("Publication of %s: %s\n",topic.c_str(), message.c_str() );
+            //printf("Publication of %s: %s\n",topic.c_str(), message.c_str() );
 
             REQUEST_t req;
 
@@ -112,7 +112,7 @@ namespace octopus{
 
         if(v[0] == SUSCRIBE_TO_TOPIC){
 
-            if(v.size() != 2) printf("----------$%&&/---------ERROR IN PROTOCOL------------$%&&/-----\n");
+            if(v.size() != 2) printf("----------###/---------ERROR IN PROTOCOL------------###/-----\n");
 
             topic_t topic = v[1];
             topic.substr(1);
