@@ -11,6 +11,10 @@
 #define TOPIC_IS_CREATED "0"
 #endif
 
+#ifndef SUSCRIBE_TO_TOPIC
+#define SUSCRIBE_TO_TOPIC "1"
+#endif
+
 #include "types.hpp"
 #include "utils.hpp"
 #include "udp.hpp"
@@ -53,10 +57,43 @@ namespace octopus{
 
     }
 
+    size_t processSuscription(std::string addr,std::string message_received){
+        std::vector<std::string> v = split(message_received, SEPARATOR);
+
+        if(v[0] == SUSCRIBE_TO_TOPIC){
+
+            if(v.size() != 2) printf("----------$%&&/---------ERROR IN PROTOCOL------------$%&&/-----\n");
+
+            topic_t topic = v[1];
+            topic.substr(1);
+
+            size_t value_hash = doHash(topic);
+
+            printf("Suscription of topic %s (%zu)\n",topic.c_str(), value_hash );
+
+            return value_hash;
+
+        }else{
+            return 0;
+        }
+
+
+    }
+
 
     std::string getMessageTopicCreated(topic_t topic){
         std::string message = "";
         message += TOPIC_IS_CREATED;
+        message += SEPARATOR;
+        message += topic;
+
+        return message;
+    }
+
+
+    std::string getMessageSuscription(topic_t topic){
+        std::string message = "";
+        message += SUSCRIBE_TO_TOPIC;
         message += SEPARATOR;
         message += topic;
 

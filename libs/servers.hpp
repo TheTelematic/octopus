@@ -113,21 +113,19 @@ namespace octopus{
 
         publishers_list_t publishers_list;
 
-
-        std::string topic_t2str(const topic_t topic){
-
-            return topic;
-        }
-
         int sizeTopic(topic_t topic){
             return topic.size();
         }
 
-        void sendSuscription(topic_t topic, ds_addrs_t addr){
-            //FIXME TO THE NEW PROTOCOL
-            /*ip4_t ip(addr);
+        void sendSuscription(topic_t topic, std::list<std::string> publishers){
 
-            this->sendto(ip, SUSCRIBER_PORT, topic_t2str(topic).c_str(), sizeTopic(topic));*/
+
+            std::string message = getMessageSuscription(topic);
+            for(iterator_string_t it2 = publishers.begin(); it2 != publishers.end(); it2++){
+                ip4_t ip(*it2);
+
+                this->sendto(ip, SUSCRIBER_PORT, message.c_str() , message.size());
+            }
 
         }
 
@@ -180,9 +178,8 @@ namespace octopus{
     public:
         SuscriberServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
 
-        bool suscribe(topic_t topic, discovered_servers_t discovered_servers){
-            //FIXME TO THE NEW PROTOCOL
-            /*if( !octopus::networkConfigured ){
+        bool suscribe(topic_t topic){
+            if( !octopus::networkConfigured ){
 
                 std::cout << "-*Can't suscribe to the topic because the network isn't configured*-" << '\n';
                 return false;
@@ -191,87 +188,40 @@ namespace octopus{
 
                 assert( sizeTopic(topic) != 0 );
 
-                if(discovered_servers.size() == 0){
-                    std::cout << "-*Can't suscribe to the topic because there are no servers to send it*-" << '\n';
+                if(publishers_list.size() == 0){
+                    std::cout << "-*Can't suscribe to the topic because there are no publisher servers to send it*-" << '\n';
                     return false;
                 }else{
                     std::cout << "Suscribing..." << '\n';
                 }
 
-                UDPsocket_t *suscriberSock = this->getSocket();
-                assert(suscriberSock != nullptr);
-                for(iterator_ds_t it = discovered_servers.begin(); it != discovered_servers.end(); it++ ){
+                size_t value_hash = doHash(topic);
+                for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
 
-                    std::string receiver = getStrIpAddr(*it);
-
-                    printf("Sending suscription of %s to %s -> ", topic_t2str(topic).c_str(), receiver.c_str() );
-
-                    sendSuscription(topic, receiver);
-
-                    printf("OK\n");
+                    if(it->hash_of_topic == value_hash){
+                        sendSuscription(topic, it->addrs_publisher);
+                        printf("OK\n");
+                        return true;
+                    }
 
 
-                }
 
 
-            }*/
-
-            return true;
-
-        }
-
-        bool addSuscription(ds_addrs_t ip_server, topic_t topic){
-            //FIXME TO THE NEW PROTOCOL
-
-            /*
-
-
-            if(topic_list.empty()){
-                addNewtopic(ip_server, topic);
-
-                return true;
-            }
-
-            for(iterator_tl_t it = topic_list.begin(); it != topic_list.end(); it++ ){
-                if(it->topic == topic){
-
-                    return addServer2Topic(&(*it), ip_server);
 
                 }
+
+
             }
 
-            addNewtopic(ip_server, topic);
-            return true;*/
-        }
+            printf("There nobody who publish that topic\n");
 
-        topic_list_t getTopicsList(){
-            //FIXME TO THE NEW PROTOCOL
-            //return topic_list;
+            return false;
+
         }
 
 
-        discovered_servers_t getServersOfTopic(topic_t topic){
-            //FIXME TO THE NEW PROTOCOL
-            /*
 
-            if(topic_list.empty()){
-                discovered_servers_t tmp;
-                return tmp;
-            }
 
-            for(iterator_tl_t it = topic_list.begin(); it != topic_list.end(); it++ ){
-
-                if(it->topic == topic){
-                    return it->suscribed_servers;
-                }
-            }
-
-            std::cout << "AQUI NO DEBERIA LLEGAR" << '\n';
-
-            //assert(1);
-            discovered_servers_t tmp;
-            return tmp;*/
-        }
 
         bool addPublisher(std::string addr, size_t value_hash){
 
@@ -291,8 +241,8 @@ namespace octopus{
         void addNewTopic(topic_t topic){
             topic_list_item_t new_topic;
 
-            new_topic.topic = topic;
-            new_topic.any_server_suscribed = false;
+            new_topic.hash_of_topic = doHash(topic);
+            new_topic.any_server_suscribed = 0;
 
             this->created_topics.push_back(new_topic);
         }
@@ -301,7 +251,8 @@ namespace octopus{
         PublisherServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
 
         bool publish(topic_t topic, topic_message_t message, discovered_servers_t suscribed_servers){
-
+            //FIXME TO THE NEW PROTOCOL
+            /*
             if(suscribed_servers.empty()){
                 std::cout << "No suscribed servers to publish" << '\n';
                 return false;
@@ -322,7 +273,21 @@ namespace octopus{
             }
 
             return true;
-            std::cout << "PUBLISHED" << '\n';
+            std::cout << "PUBLISHED" << '\n';*/
+        }
+
+        bool addSuscription(size_t value_hash){
+            for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
+
+                if(it->hash_of_topic == value_hash){
+                    it->any_server_suscribed++;
+                    return true;
+                }
+
+            }
+
+
+            return false;
         }
 
 
@@ -332,8 +297,9 @@ namespace octopus{
                 addNewTopic(topic);
 
             }else{
+                size_t value_hash = doHash(topic);
                 for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
-                    if(it->topic == topic){
+                    if(it->hash_of_topic == value_hash){
                         std::cout << "Topic already exists" << '\n';
                         return 0;
                     }

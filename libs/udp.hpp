@@ -102,35 +102,29 @@ namespace octopus{
 
 
         bool suscribe(topic_t topic){
-            //FIXME TO THE NEW PROTOCOL
-            assert(discoverer != nullptr);
+
             assert(suscriber != nullptr);
-            return suscriber->suscribe(topic, discoverer->getServerAddresses());
+            return suscriber->suscribe(topic);
 
         }
 
-        bool addSuscription(net::UDP::addr_t addr, std::string topic){
-            //FIXME TO THE NEW PROTOCOL
-            assert(suscriber != nullptr);
-            return suscriber->addSuscription(addr.to_string(), topic);
+        bool addSuscription(size_t value_hash){
+            assert(publisher != nullptr);
+            return publisher->addSuscription(value_hash);
 
         }
 
-        topic_list_t getTopicsList(){
-            //FIXME TO THE NEW PROTOCOL
-            assert(suscriber != nullptr);
-            return suscriber->getTopicsList();
-        }
+
 
 
         bool publish(topic_t topic, topic_message_t message){
             //FIXME TO THE NEW PROTOCOL
-            assert(suscriber != nullptr);
+            /*assert(suscriber != nullptr);
             assert(publisher != nullptr);
 
             printf("Pusblishing the message (%s) of %s\n",message.c_str(), topic.c_str());
 
-            return publisher->publish(topic, message, suscriber->getServersOfTopic(topic));
+            return publisher->publish(topic, message, suscriber->getServersOfTopic(topic));*/
 
         }
 

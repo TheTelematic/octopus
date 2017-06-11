@@ -23,12 +23,12 @@ namespace octopus{
 
 
 
-    void addSuscription(ip4_t addr, topic_t topic){
+    void addSuscription(size_t value_hash){
 
         auto &server = octopus::__octoUDP_server;
         assert(server != nullptr);
 
-        if(server->addSuscription(addr, topic)){
+        if(server->addSuscription(value_hash)){
             std::cout << "Suscribed!" << '\n';
             update_topics = true;
         }
@@ -92,11 +92,11 @@ namespace octopus{
 
             std::string strdata(data,len);
 
-            CHECK(1, "Suscription of topic %s from %s", strdata.c_str(), addr.to_string().c_str());
+            size_t value_hash = processSuscription(addr.to_string(), strdata);
+            if(value_hash != 0) addSuscription(value_hash);
+            else printf("Process of suscription failed\n");
 
-            addSuscription(addr, strdata);
-
-            forcePublish(strdata, "Hello guys!");
+            //forcePublish(strdata, "Hello guys!");
 
         }else{
             std::cout << "**Suscription received, but network isn't configured**" << '\n';
@@ -137,7 +137,7 @@ namespace octopus{
             if( !server->suscribe(topic) ){
                 std::cout << "-*Failed the suscription to "<< topic << " *-" << '\n';
 
-                retrySuscription(topic);
+                //retrySuscription(topic);
             }
 
 
@@ -272,12 +272,23 @@ namespace octopus{
 
         if(parameters[0] == CREATE_TOPIC){
             if(parameters.size() != 2){
-                return -1;
+                return -2;
             }
             createTopic(parameters[1]);
 
             return 0;
-        }else{
+        }else if(parameters[0] == SUSCRIBE){
+            if(parameters.size() != 2){
+                return -2;
+            }
+
+            suscribe_to_topic(parameters[1]);
+
+            return 0;
+        }
+
+
+        else{
             return -1;
         }
 
@@ -288,7 +299,17 @@ namespace octopus{
 
         printf("-> %s\n", data.c_str() );
 
-        if(process_request(data) == -1) client->write("Error in the command\n");
+        int res = process_request(data);
+
+        if(res == -1){
+            std::string response = "";
+
+            response += "Error in the command\n";
+            response += HELP;
+
+            client->write(response);
+        }
+        else if(res == -2) client->write("Error with the arguments\n");
 
         client->write("> ");
     }

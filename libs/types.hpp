@@ -30,8 +30,8 @@ namespace octopus{
 
     typedef std::string topic_t;
     typedef struct{
-        topic_t topic;
-        bool any_server_suscribed;
+        size_t hash_of_topic;
+        int any_server_suscribed;
 
     }topic_list_item_t;
 
