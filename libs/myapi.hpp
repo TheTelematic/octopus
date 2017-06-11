@@ -110,13 +110,22 @@ namespace octopus{
 
             std::string strdata(data,len);
 
-            size_t value_hash = processPublication(addr.to_string(), strdata);
-            if(value_hash != 0){
+            REQUEST_t req = processPublication(addr.to_string(), strdata);
+            if(req.type == TOPIC_IS_CREATED){
                 auto &server = octopus::__octoUDP_server;
                 assert(server != nullptr);
 
-                server->savePublisher(addr.to_string(), value_hash);
-            }else{
+                server->savePublisher(addr.to_string(), req.hash_of_topic);
+            }else if(req.type == PUBLICATION){
+
+                auto &server = octopus::__octoUDP_server;
+                assert(server != nullptr);
+
+                server->processPub(req.hash_of_topic, req.message);
+            }
+
+
+            else{
                 printf("Process of publication failed\n");
             }
 
@@ -133,6 +142,8 @@ namespace octopus{
 
             auto &server = octopus::__octoUDP_server;
             assert(server != nullptr);
+
+            printf("Suscribing to the topic: %s -\n", topic.c_str());
 
             if( !server->suscribe(topic) ){
                 std::cout << "-*Failed the suscription to "<< topic << " *-" << '\n';
@@ -217,13 +228,14 @@ namespace octopus{
     }
 
 
-    bool forcePublish(topic_t topic, topic_message_t message){
+    bool publish_a_message(topic_t topic, topic_message_t message){
         if(octopus::networkConfigured){
             auto &server = octopus::__octoUDP_server;
             assert(server != nullptr);
 
             std::cout << "Sending publication of "<< topic << " : " << message << '\n';
-            // FIXME: THIS CRASH
+
+
             if (! server->publish(topic, message)){
                 std::cout << "Can't publish" << '\n';
                 return false;
@@ -281,10 +293,23 @@ namespace octopus{
             if(parameters.size() != 2){
                 return -2;
             }
-
+            //printf("Suscribing/////\n");
             suscribe_to_topic(parameters[1]);
 
+            printf("Suscription processed\n");
+
             return 0;
+        }else if(parameters[0] == PUBLISH){
+
+            if(parameters.size() != 3){
+                return -2;
+            }
+
+
+            publish_a_message(parameters[1], parameters[2]);
+
+            return 0;
+
         }
 
 
@@ -310,6 +335,8 @@ namespace octopus{
             client->write(response);
         }
         else if(res == -2) client->write("Error with the arguments\n");
+
+        printf("REQUEST PROCESSED\n");
 
         client->write("> ");
     }

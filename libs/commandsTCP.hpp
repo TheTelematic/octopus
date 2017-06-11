@@ -6,9 +6,13 @@
 #define SUSCRIBE "SUSCRIBE"
 #endif
 
+#ifndef PUBLISH
+#define PUBLISH "PUBLISH"
+#endif
 
 #ifndef HELP
 #define HELP "Available commands:\n \
 CREATE_TOPIC {name_of_topic}    -> create a topic\n \
-SUSCRIBE {name_of_topic}        -> suscribe to a added topic\n"
+SUSCRIBE {name_of_topic}        -> suscribe to a added topic\n \
+PUBLISH {name_of_topic} {message} -> publish a message of a topic\n"
 #endif

@@ -12,6 +12,8 @@ namespace octopus{
         UDPsocket_t *socket;
 
     public:
+        GenericUDPServer(){socket = nullptr;}
+
         GenericUDPServer(UDPsocket_t *socket){
             this->socket = socket;
         }
@@ -174,8 +176,16 @@ namespace octopus{
 
         }
 
+        void processMessage(size_t value_hash, topic_message_t message){
+
+            printf("-Publication processed-\n Message: %s\nTopic (hashed): %zu\n",message.c_str(), value_hash );
+
+        }
+
 
     public:
+        SuscriberServer(){}
+
         SuscriberServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
 
         bool suscribe(topic_t topic){
@@ -191,24 +201,34 @@ namespace octopus{
                 if(publishers_list.size() == 0){
                     std::cout << "-*Can't suscribe to the topic because there are no publisher servers to send it*-" << '\n';
                     return false;
-                }else{
-                    std::cout << "Suscribing..." << '\n';
                 }
 
                 size_t value_hash = doHash(topic);
-                for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
+                if(publishers_list.size() == 1){
+                    //std::cout << "Suscribing..." << '\n';
 
-                    if(it->hash_of_topic == value_hash){
-                        sendSuscription(topic, it->addrs_publisher);
+
+                    if(publishers_list.begin()->hash_of_topic == value_hash){
+                        sendSuscription(topic, publishers_list.begin()->addrs_publisher);
+                        publishers_list.begin()->suscribed = true;
                         printf("OK\n");
                         return true;
                     }
+                }else{
+                    for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
 
+                        if(it->hash_of_topic == value_hash){
+                            sendSuscription(topic, it->addrs_publisher);
+                            it->suscribed = true;
+                            printf("OK\n");
+                            return true;
+                        }
 
-
-
-
+                    }
                 }
+
+
+
 
 
             }
@@ -226,6 +246,19 @@ namespace octopus{
         bool addPublisher(std::string addr, size_t value_hash){
 
             return savePublisher(addr, value_hash);
+
+        }
+
+        void processPub(size_t value_hash, topic_message_t message){
+
+            for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
+                if(it->hash_of_topic == value_hash){
+                    if(it->suscribed){
+                        processMessage(value_hash, message);
+                    }
+                    return;
+                }
+            }
 
         }
 
@@ -250,30 +283,28 @@ namespace octopus{
     public:
         PublisherServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
 
-        bool publish(topic_t topic, topic_message_t message, discovered_servers_t suscribed_servers){
-            //FIXME TO THE NEW PROTOCOL
-            /*
-            if(suscribed_servers.empty()){
-                std::cout << "No suscribed servers to publish" << '\n';
-                return false;
+        bool publish(topic_t topic, topic_message_t message){
+
+            size_t value_hash = doHash(topic);
+
+            for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
+                if(it->hash_of_topic == value_hash){
+                    if(it->any_server_suscribed > 0){
+
+                        std::string message = getMessagePublication(topic, message);
+
+                        this->sendto(BROADCAST_ADDRESS, PUBLISHER_PORT, message.c_str(), message.size());
+
+                        return true;
+
+                    }else{
+                        printf("Any server suscribed to this topic\n" );
+                        return false;
+                    }
+                }
             }
-
-            for(iterator_ds_t it = suscribed_servers.begin(); it != suscribed_servers.end(); it++ ){
-
-                ip4_t addr(*it);
-
-                Message m(topic, message);
-
-                m.build();
-
-                std::string request = m.getRequest();
-
-                this->sendto(addr, PUBLISHER_PORT, request.c_str(), request.size());
-
-            }
-
-            return true;
-            std::cout << "PUBLISHED" << '\n';*/
+            printf("The topic doesn't exist\n" );
+            return false;
         }
 
         bool addSuscription(size_t value_hash){

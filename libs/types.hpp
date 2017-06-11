@@ -43,6 +43,7 @@ namespace octopus{
     typedef struct{
         std::list<std::string> addrs_publisher;
         size_t hash_of_topic;
+        bool suscribed;
     }publisher_item_list_t;
 
     typedef std::list<publisher_item_list_t> publishers_list_t;

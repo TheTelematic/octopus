@@ -102,10 +102,14 @@ namespace octopus{
 
 
         bool suscribe(topic_t topic){
-
+            if(suscriber == nullptr) {
+                printf("THAT HAPPENED D:\n" );
+                return false;
+            }
             assert(suscriber != nullptr);
+            //printf("Suscribing/////\n");
             return suscriber->suscribe(topic);
-
+            //return true;
         }
 
         bool addSuscription(size_t value_hash){
@@ -118,13 +122,13 @@ namespace octopus{
 
 
         bool publish(topic_t topic, topic_message_t message){
-            //FIXME TO THE NEW PROTOCOL
-            /*assert(suscriber != nullptr);
+
+
             assert(publisher != nullptr);
 
-            printf("Pusblishing the message (%s) of %s\n",message.c_str(), topic.c_str());
+            printf("Publishing the message (%s) of %s\n",message.c_str(), topic.c_str());
 
-            return publisher->publish(topic, message, suscriber->getServersOfTopic(topic));*/
+            return publisher->publish(topic, message);
 
         }
 
@@ -159,6 +163,16 @@ namespace octopus{
 
             if(suscriber->addPublisher(addr, value_hash)) printf("Saved the publisher...\n");
             else printf("(already exists)\n");
+        }
+
+
+        void processPub(size_t value_hash, topic_message_t message){
+
+            assert(suscriber != nullptr);
+
+            suscriber->processPub(value_hash, message);
+
+
         }
 
     };

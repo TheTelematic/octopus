@@ -7,6 +7,10 @@
 #define SEPARATOR "//"
 #endif
 
+#ifndef ERROR_PROTOCOL
+#define ERROR_PROTOCOL "-1"
+#endif
+
 #ifndef TOPIC_IS_CREATED
 #define TOPIC_IS_CREATED "0"
 #endif
@@ -15,11 +19,22 @@
 #define SUSCRIBE_TO_TOPIC "1"
 #endif
 
+
+#ifndef PUBLICATION
+#define PUBLICATION "3"
+#endif
+
 #include "types.hpp"
 #include "utils.hpp"
 #include "udp.hpp"
 
 namespace octopus{
+
+    typedef struct REQUEST_t{
+        char *type;
+        size_t hash_of_topic;
+        topic_message_t message;
+    };
 
     size_t doHash(topic_t topic){
         std::hash<topic_t> hash;
@@ -30,7 +45,7 @@ namespace octopus{
 
 
 
-    size_t processPublication(std::string addr, std::string message_received){
+    REQUEST_t processPublication(std::string addr, std::string message_received){
 
         std::vector<std::string> v = split(message_received, SEPARATOR);
 
@@ -46,13 +61,48 @@ namespace octopus{
             printf("Topic created by %s: %s\n", addr.c_str(), topic.c_str() );
             printf("Hash: %zu\n", value_hash);
 
-            return value_hash;
+            REQUEST_t req;
+
+            req.type = TOPIC_IS_CREATED;
+            req.hash_of_topic = value_hash;
+
+            return req;
 
 
 
 
-        }else{
-            return 0;
+        }else if(v[0] == PUBLICATION){
+
+            if(v.size() != 3) printf("----------$%&&/---------ERROR IN PROTOCOL------------$%&&/-----\n");
+
+            topic_t topic = v[1];
+            topic.substr(1);
+
+            topic_message_t message = v[2];
+            message.substr(1);
+
+
+            printf("Publication of %s: %s\n",topic.c_str(), message.c_str() );
+
+            REQUEST_t req;
+
+            req.type = PUBLICATION;
+
+            size_t value_hash = doHash(topic);
+            req.hash_of_topic = value_hash;
+
+            req.message = message;
+
+            return req;
+        }
+
+
+
+        else{
+            REQUEST_t req;
+
+            req.type = ERROR_PROTOCOL;
+            return req;
         }
 
     }
@@ -96,6 +146,17 @@ namespace octopus{
         message += SUSCRIBE_TO_TOPIC;
         message += SEPARATOR;
         message += topic;
+
+        return message;
+    }
+
+    std::string getMessagePublication(topic_t topic, topic_message_t message_){
+        std::string message = "";
+        message += PUBLICATION;
+        message += SEPARATOR;
+        message += topic;
+        message += SEPARATOR;
+        message += message_;
 
         return message;
     }
