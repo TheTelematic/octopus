@@ -205,7 +205,7 @@ namespace octopus{
 
                 size_t value_hash = doHash(topic);
                 if(publishers_list.size() == 1){
-                    //std::cout << "Suscribing..." << '\n';
+                    std::cout << "Only one publisher" << '\n';
 
 
                     if(publishers_list.begin()->hash_of_topic == value_hash){
@@ -215,6 +215,7 @@ namespace octopus{
                         return true;
                     }
                 }else{
+                    std::cout << "More than one publisher - " << publishers_list.size() << '\n';
                     for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
 
                         if(it->hash_of_topic == value_hash){
@@ -228,15 +229,10 @@ namespace octopus{
                 }
 
 
+                printf("There nobody who publish that topic\n");
 
-
-
+                return false;
             }
-
-            printf("There nobody who publish that topic\n");
-
-            return false;
-
         }
 
 
@@ -285,9 +281,12 @@ namespace octopus{
 
         bool publish(topic_t topic, topic_message_t message){
 
+            printf("TOPIC: %s-\n", topic.c_str());
             size_t value_hash = doHash(topic);
 
+            printf("TARGET hash topic: %zu\n", value_hash);
             for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
+                printf("Saved hash topic: %zu\n", it->hash_of_topic);
                 if(it->hash_of_topic == value_hash){
                     if(it->any_server_suscribed > 0){
 

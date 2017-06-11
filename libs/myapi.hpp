@@ -286,7 +286,10 @@ namespace octopus{
             if(parameters.size() != 2){
                 return -2;
             }
-            createTopic(parameters[1]);
+
+            topic_t topic = parameters[1].substr(0, parameters[1].size() - 1);
+
+            createTopic(topic);
 
             return 0;
         }else if(parameters[0] == SUSCRIBE){
@@ -294,9 +297,12 @@ namespace octopus{
                 return -2;
             }
             //printf("Suscribing/////\n");
-            suscribe_to_topic(parameters[1]);
 
-            printf("Suscription processed\n");
+            topic_t topic = parameters[1].substr(0, parameters[1].size() - 1);
+
+            suscribe_to_topic(topic);
+
+            //printf("Suscription processed\n");
 
             return 0;
         }else if(parameters[0] == PUBLISH){
@@ -304,9 +310,10 @@ namespace octopus{
             if(parameters.size() != 3){
                 return -2;
             }
+            topic_t topic = parameters[2].substr(0, parameters[2].size() - 1);
+            topic_message_t message = parameters[1].substr(0, parameters[1].size() - 1);
 
-
-            publish_a_message(parameters[1], parameters[2]);
+            publish_a_message(topic, message);
 
             return 0;
 

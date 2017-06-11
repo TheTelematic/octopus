@@ -135,7 +135,7 @@ namespace octopus{
         size_t create_topic(topic_t topic){
             assert(publisher != nullptr);
 
-            printf("Creating the topic...\n");
+            printf("Creating the topic %s-\n", topic.c_str());
 
             size_t value_hash = publisher->create_topic(topic);
 
@@ -149,7 +149,7 @@ namespace octopus{
         void announceTopicCreated(topic_t topic){
             assert(publisher != nullptr);
 
-            printf("Announcing the topic %s\n",topic.c_str());
+            //printf("Announcing the topic %s\n",topic.c_str());
 
             publisher->announceTopicCreated(topic);
 
@@ -162,7 +162,9 @@ namespace octopus{
 
 
             if(suscriber->addPublisher(addr, value_hash)) printf("Saved the publisher...\n");
-            else printf("(already exists)\n");
+            else {
+                //printf("(already exists)\n");
+            }
         }
 
 

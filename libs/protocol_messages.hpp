@@ -58,8 +58,8 @@ namespace octopus{
 
             size_t value_hash = doHash(topic);
 
-            printf("Topic created by %s: %s\n", addr.c_str(), topic.c_str() );
-            printf("Hash: %zu\n", value_hash);
+            //printf("Topic created by %s: %s\n", addr.c_str(), topic.c_str() );
+            //printf("Hash: %zu\n", value_hash);
 
             REQUEST_t req;
 

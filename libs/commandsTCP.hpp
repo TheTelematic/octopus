@@ -14,5 +14,5 @@
 #define HELP "Available commands:\n \
 CREATE_TOPIC {name_of_topic}    -> create a topic\n \
 SUSCRIBE {name_of_topic}        -> suscribe to a added topic\n \
-PUBLISH {name_of_topic} {message} -> publish a message of a topic\n"
+PUBLISH {message} {name_of_topic} -> publish a message of a topic\n"
 #endif
