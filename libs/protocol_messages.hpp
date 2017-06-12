@@ -24,6 +24,14 @@
 #define PUBLICATION "3"
 #endif
 
+#ifndef TOPIC_IS_REMOVED
+#define TOPIC_IS_REMOVED "4"
+#endif
+
+#ifndef UNSUSCRIBE_TO_TOPIC
+#define UNSUSCRIBE_TO_TOPIC "5"
+#endif
+
 #include "types.hpp"
 #include "utils.hpp"
 #include "udp.hpp"
@@ -94,6 +102,25 @@ namespace octopus{
             req.message = message;
 
             return req;
+        }else if(v[0] == TOPIC_IS_REMOVED){
+
+            if(v.size() != 2) printf("----------###/---------ERROR IN PROTOCOL------------###/-----\n");
+
+            topic_t topic = v[1];
+            topic.substr(1);
+
+            size_t value_hash = doHash(topic);
+
+            //printf("Topic created by %s: %s\n", addr.c_str(), topic.c_str() );
+            //printf("Hash: %zu\n", value_hash);
+
+            REQUEST_t req;
+
+            req.type = TOPIC_IS_REMOVED;
+            req.hash_of_topic = value_hash;
+
+            return req;
+
         }
 
 
@@ -107,7 +134,7 @@ namespace octopus{
 
     }
 
-    size_t processSuscription(std::string addr,std::string message_received){
+    REQUEST_t processSuscription(std::string addr,std::string message_received){
         std::vector<std::string> v = split(message_received, SEPARATOR);
 
         if(v[0] == SUSCRIBE_TO_TOPIC){
@@ -121,10 +148,39 @@ namespace octopus{
 
             printf("Suscription of topic %s (%zu)\n",topic.c_str(), value_hash );
 
-            return value_hash;
+            REQUEST_t req;
 
-        }else{
-            return 0;
+            req.type = SUSCRIBE_TO_TOPIC;
+            req.hash_of_topic = value_hash;
+
+            return req;
+
+        }else if(v[0] == UNSUSCRIBE_TO_TOPIC){
+
+            if(v.size() != 2) printf("----------###/---------ERROR IN PROTOCOL------------###/-----\n");
+
+            topic_t topic = v[1];
+            topic.substr(1);
+
+            size_t value_hash = doHash(topic);
+
+            printf("UNsuscription of topic %s (%zu)\n",topic.c_str(), value_hash );
+
+            REQUEST_t req;
+
+            req.type = UNSUSCRIBE_TO_TOPIC;
+            req.hash_of_topic = value_hash;
+
+            return req;
+
+        }
+
+
+        else{
+            REQUEST_t req;
+
+            req.type = ERROR_PROTOCOL;
+            return req;
         }
 
 
@@ -157,6 +213,25 @@ namespace octopus{
         message += topic;
         message += SEPARATOR;
         message += message_;
+
+        return message;
+    }
+
+    std::string getMessageTopicRemoved(topic_t topic){
+        std::string message = "";
+        message += TOPIC_IS_REMOVED;
+        message += SEPARATOR;
+        message += topic;
+
+        return message;
+    }
+
+
+    std::string getMessageUnsuscription(topic_t topic){
+        std::string message = "";
+        message += UNSUSCRIBE_TO_TOPIC;
+        message += SEPARATOR;
+        message += topic;
 
         return message;
     }

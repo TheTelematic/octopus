@@ -35,6 +35,15 @@ namespace octopus{
 
     }
 
+    void removeSuscription(size_t value_hash){
+
+        auto &server = octopus::__octoUDP_server;
+        assert(server != nullptr);
+
+        server->removeSuscription(value_hash);
+
+    }
+
     bool addAddrServer(ds_addrs_t addr){
         auto &server = octopus::__octoUDP_server;
         assert(server != nullptr);
@@ -92,8 +101,12 @@ namespace octopus{
 
             std::string strdata(data,len);
 
-            size_t value_hash = processSuscription(addr.to_string(), strdata);
-            if(value_hash != 0) addSuscription(value_hash);
+            REQUEST_t req = processSuscription(addr.to_string(), strdata);
+            if(req.type == SUSCRIBE_TO_TOPIC){
+                addSuscription(req.hash_of_topic);
+            }else if(req.type == UNSUSCRIBE_TO_TOPIC){
+                removeSuscription(req.hash_of_topic);
+            }
             else printf("Process of suscription failed\n");
 
             //forcePublish(strdata, "Hello guys!");
@@ -122,6 +135,13 @@ namespace octopus{
                 assert(server != nullptr);
 
                 server->processPub(req.hash_of_topic, req.message);
+            }else if(req.type == TOPIC_IS_REMOVED){
+
+                auto &server = octopus::__octoUDP_server;
+                assert(server != nullptr);
+
+                server->removePublisher(addr.to_string(), req.hash_of_topic);
+
             }
 
 
@@ -275,6 +295,19 @@ namespace octopus{
     }
 
 
+    void remove_created_topic(topic_t topic){
+        auto &server = octopus::__octoUDP_server;
+        assert(server != nullptr);
+
+        server->remove_topic(topic);
+    }
+
+    void unsuscribe_topic(topic_t topic){
+        auto &server = octopus::__octoUDP_server;
+        assert(server != nullptr);
+
+        server->unsuscribe(topic);
+    }
 
 
     int process_request(std::string request){
@@ -317,6 +350,25 @@ namespace octopus{
 
             return 0;
 
+        }else if(parameters[0] == UNSUSCRIBE){
+            if(parameters.size() != 2){
+                return -2;
+            }
+
+            topic_t topic = parameters[1].substr(0, parameters[1].size() - 1);
+
+            unsuscribe_topic(topic);
+            return 0;
+        }else if(parameters[0] == REMOVE_TOPIC){
+            if(parameters.size() != 2){
+                return -2;
+            }
+
+            topic_t topic = parameters[1].substr(0, parameters[1].size() - 1);
+
+            remove_created_topic(topic);
+
+            return 0;
         }
 
 

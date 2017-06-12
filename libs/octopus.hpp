@@ -158,6 +158,15 @@ namespace octopus{
         void create_topic(topic_t topic){
             createTopic(topic);
         }
+
+        void unsuscribe(topic_t topic){
+            unsuscribe_topic(topic);
+        }
+
+        void remove_topic(topic_t topic){
+            remove_created_topic(topic);
+        }
+
     };
 
 }

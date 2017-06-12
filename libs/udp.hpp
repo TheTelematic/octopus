@@ -177,6 +177,32 @@ namespace octopus{
 
         }
 
+        void remove_topic(topic_t topic){
+
+            assert(publisher != nullptr);
+
+            publisher->remove_topic(topic);
+        }
+
+
+        void unsuscribe(topic_t topic){
+            assert(suscriber != nullptr);
+            return suscriber->unsuscribe(topic);
+        }
+
+        void removeSuscription(size_t value_hash){
+            assert(publisher != nullptr);
+            publisher->removeSuscription(value_hash);
+        }
+
+        void removePublisher(std::string addr, size_t value_hash){
+            assert(suscriber != nullptr);
+
+            suscriber->removePublisher(addr, value_hash);
+
+            printf("Publisher removed\n");
+        }
+
     };
 
 

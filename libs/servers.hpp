@@ -131,6 +131,18 @@ namespace octopus{
 
         }
 
+        void sendUnsuscription(topic_t topic, std::list<std::string> publishers){
+
+
+            std::string message = getMessageUnsuscription(topic);
+            for(iterator_string_t it2 = publishers.begin(); it2 != publishers.end(); it2++){
+                ip4_t ip(*it2);
+
+                this->sendto(ip, SUSCRIBER_PORT, message.c_str() , message.size());
+            }
+
+        }
+
         void addNewtopic(std::string addr, size_t value_hash){
 
             publisher_item_list_t new_item;
@@ -260,6 +272,69 @@ namespace octopus{
         }
 
 
+        void unsuscribe(topic_t topic){
+
+            if(publishers_list.size() == 0){
+                std::cout << "-*Can't unsuscribe to the topic because there are no publisher servers to send it*-" << '\n';
+                return ;
+            }
+
+            size_t value_hash = doHash(topic);
+            if(publishers_list.size() == 1){
+                std::cout << "Only one publisher" << '\n';
+
+
+                if(publishers_list.begin()->hash_of_topic == value_hash){
+                    publishers_list.begin()->suscribed = false;
+
+                    sendUnsuscription(topic, publishers_list.begin()->addrs_publisher);
+                }
+            }else{
+                std::cout << "More than one publisher - " << publishers_list.size() << '\n';
+                for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
+
+                    if(it->hash_of_topic == value_hash){
+                        it->suscribed = false;
+
+                        sendUnsuscription(topic, it->addrs_publisher);
+                    }
+
+                }
+            }
+
+        }
+
+
+        void removePublisher(std::string addr, size_t value_hash){
+            if(publishers_list.empty()){
+                printf("No publishers\n" );
+                return;
+            }
+
+
+            for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++ ){
+                if(it->hash_of_topic == value_hash){
+
+                    for(iterator_string_t it2 = it->addrs_publisher.begin(); it2 != it->addrs_publisher.end(); it2++ ){
+
+                        if(*it2 == addr){
+                            it->addrs_publisher.erase(it2);
+                            printf("Publisher removed\n" );
+                            return;
+                        }
+
+                    }
+
+                    printf("That publisher doesn't exist for this topic\n");
+                    return ;
+                }
+            }
+
+            printf("Anybody publish for this topic\n");
+
+        }
+
+
     };
 
 
@@ -275,6 +350,15 @@ namespace octopus{
             new_topic.any_server_suscribed = 0;
 
             this->created_topics.push_back(new_topic);
+        }
+
+
+        void sendTopicRemoved(topic_t topic){
+
+            std::string announce = getMessageTopicRemoved(topic);
+
+            this->sendto(BROADCAST_ADDRESS, PUBLISHER_PORT, announce.c_str(), announce.size());
+
         }
 
     public:
@@ -357,6 +441,41 @@ namespace octopus{
 
             this->sendto(BROADCAST_ADDRESS, PUBLISHER_PORT, announce.c_str(), announce.size());
 
+        }
+
+
+
+
+        void remove_topic(topic_t topic){
+
+            if(this->created_topics.empty()) return;
+
+            size_t value_hash = doHash(topic);
+            for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
+                if(it->hash_of_topic == value_hash){
+                    this->created_topics.erase(it);
+                    printf("Topic %s has been removed\n",topic.c_str() );
+                    sendTopicRemoved(topic);
+                    return;
+                }
+            }
+
+            printf("Topic %s doesn't exist\n",topic.c_str() );
+        }
+
+
+        void removeSuscription(size_t value_hash){
+            for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
+
+                if(it->hash_of_topic == value_hash){
+
+                    if(it->any_server_suscribed > 0){
+                        it->any_server_suscribed--;
+                        printf("Server unsuscribed\n");
+                    }
+                }
+
+            }
         }
 
     };
