@@ -121,12 +121,14 @@ namespace octopus{
 
         void sendSuscription(topic_t topic, std::list<std::string> publishers){
 
-
+            if(publishers.size() == 0) printf("THERE NO ARE PUBLISHERS\n");
             std::string message = getMessageSuscription(topic);
-            for(iterator_string_t it2 = publishers.begin(); it2 != publishers.end(); it2++){
-                ip4_t ip(*it2);
+            for(iterator_string_t it = publishers.begin(); it != publishers.end(); it++){
+                //printf("it: %d addr: %s-\n",it, (*it).c_str() );
+                ip4_t ip(*it);
 
                 this->sendto(ip, SUSCRIBER_PORT, message.c_str() , message.size());
+
             }
 
         }
@@ -149,7 +151,7 @@ namespace octopus{
 
             new_item.hash_of_topic = value_hash;
 
-            std::list<std::string> tmp;
+            //std::list<std::string> tmp;
             new_item.addrs_publisher.push_back(addr);
             new_item.suscribed = false;
 
@@ -215,31 +217,20 @@ namespace octopus{
                     std::cout << "-*Can't suscribe to the topic because there are no publisher servers to send it*-" << '\n';
                     return false;
                 }
+                printf("The size of the publishers_list is %lu\n", publishers_list.size());
 
                 size_t value_hash = doHash(topic);
-                if(publishers_list.size() == 1){
-                    std::cout << "Only one publisher" << '\n';
+                for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
 
-
-                    if(publishers_list.begin()->hash_of_topic == value_hash){
-                        sendSuscription(topic, publishers_list.begin()->addrs_publisher);
-                        publishers_list.begin()->suscribed = true;
+                    if(it->hash_of_topic == value_hash){
+                        sendSuscription(topic, it->addrs_publisher);
+                        it->suscribed = true;
                         printf("OK\n");
                         return true;
                     }
-                }else{
-                    std::cout << "More than one publisher - " << publishers_list.size() << '\n';
-                    for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
 
-                        if(it->hash_of_topic == value_hash){
-                            sendSuscription(topic, it->addrs_publisher);
-                            it->suscribed = true;
-                            printf("OK\n");
-                            return true;
-                        }
-
-                    }
                 }
+
 
 
                 printf("There nobody who publish that topic\n");
@@ -342,12 +333,29 @@ namespace octopus{
     private:
 
         topic_list_t created_topics;
+        typedef struct parameters_to_timer{
+            topic_t topic;
+            UDPsocket_t* socket;
+        };
 
         void addNewTopic(topic_t topic){
             topic_list_item_t new_topic;
 
             new_topic.hash_of_topic = doHash(topic);
             new_topic.any_server_suscribed = 0;
+
+
+            parameters_to_timer params;
+            params.topic = topic;
+            params.socket = this->getSocket();
+
+
+            // Publish to the rest that exists that topic with the UUID(hash of the name)
+            new_topic.timer_id = Timers::periodic(1s, 5s, [params] (auto) {
+                std::string announce = getMessageTopicCreated(params.topic);
+
+                params.socket->sendto(BROADCAST_ADDRESS, PUBLISHER_PORT, announce.c_str(), announce.size());
+            });
 
             this->created_topics.push_back(new_topic);
         }
@@ -453,6 +461,7 @@ namespace octopus{
             size_t value_hash = doHash(topic);
             for(iterator_tl_t it = this->created_topics.begin(); it != this->created_topics.end(); it++ ){
                 if(it->hash_of_topic == value_hash){
+                    Timers::stop(it->timer_id);
                     this->created_topics.erase(it);
                     printf("Topic %s has been removed\n",topic.c_str() );
                     sendTopicRemoved(topic);

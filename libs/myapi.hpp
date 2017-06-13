@@ -283,13 +283,10 @@ namespace octopus{
     void createTopic(topic_t topic){
         auto &server = octopus::__octoUDP_server;
         assert(server != nullptr);
-        //Create the entry in the table, and put the value "any_server_suscribed" to false
+        //Create the entry in the table, and put the value "any_server_suscribed" to 0
         server->create_topic(topic);
 
-        // Publish to the rest that exists that topic with the UUID(hash of the name)
-        Timers::periodic(1s, 5s, [topic] (auto) {
-            announceTopicCreated(topic);
-        });
+
 
         // End
     }

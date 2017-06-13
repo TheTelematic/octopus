@@ -199,8 +199,6 @@ namespace octopus{
             assert(suscriber != nullptr);
 
             suscriber->removePublisher(addr, value_hash);
-
-            printf("Publisher removed\n");
         }
 
     };

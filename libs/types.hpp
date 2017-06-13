@@ -32,6 +32,7 @@ namespace octopus{
     typedef struct{
         size_t hash_of_topic;
         int any_server_suscribed;
+        Timers::id_t timer_id;
 
     }topic_list_item_t;
 
