@@ -74,7 +74,7 @@ namespace octopus{
 
             std::string strdata(data,len);
 
-            CHECK(1, "Discovered new server in %s", strdata.c_str());
+            printf("Discovered new server in %s", strdata.c_str());
 
             if(new_server){
                 if(addAddrServer(strdata)){
@@ -96,12 +96,12 @@ namespace octopus{
 
     bool forcePublish(topic_t topic, topic_message_t message);
 
-    void handle_suscriptionsocket_receiver(ip4_t addr, const char* data, size_t len){
+    void handle_suscriptionsocket_receiver(const char* data, size_t len){
         if(octopus::networkConfigured){
 
             std::string strdata(data,len);
 
-            REQUEST_t req = processSuscription(addr.to_string(), strdata);
+            REQUEST_t req = processSuscription(strdata);
             if(req.type == SUSCRIBE_TO_TOPIC){
                 addSuscription(req.hash_of_topic);
             }else if(req.type == UNSUSCRIBE_TO_TOPIC){
@@ -123,7 +123,7 @@ namespace octopus{
 
             std::string strdata(data,len);
 
-            REQUEST_t req = processPublication(addr.to_string(), strdata);
+            REQUEST_t req = processPublication(strdata);
             if(req.type == TOPIC_IS_CREATED){
                 auto &server = octopus::__octoUDP_server;
                 assert(server != nullptr);

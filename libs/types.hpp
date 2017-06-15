@@ -51,6 +51,7 @@ namespace octopus{
     typedef std::list<publisher_item_list_t>::iterator iterator_publishers_t;
     typedef std::list<std::string>::iterator iterator_string_t;
 
+
 }
 
 

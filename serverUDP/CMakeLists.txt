@@ -23,7 +23,7 @@ set(MAX_MEM 128)
 
 # Source files to be linked with OS library parts to form bootable image
 set(SOURCES
-  service.cpp # ...add more here
+  service.cpp # /home/arturo/tfg/octopus/protobuf/topic.pb.cc
   )
 
 #
@@ -56,9 +56,10 @@ set(PLUGINS
 # THIRD PARTY LIBRARIES:
 
 set(LIBRARIES
-  # path to full library
+  # /usr/local/lib/libprotobuf.a
   )
 
+#include_directories(/usr/local/include)
 
 # include service build script
 include($ENV{INCLUDEOS_PREFIX}/includeos/post.service.cmake)

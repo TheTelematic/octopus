@@ -59,7 +59,7 @@ namespace octopus{
                         const char* data,
                         size_t len
                         ){
-                            handle_suscriptionsocket_receiver(addr, data, len);
+                            handle_suscriptionsocket_receiver( data, len);
                         }
 
             );

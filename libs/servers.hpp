@@ -119,15 +119,22 @@ namespace octopus{
             return topic.size();
         }
 
-        void sendSuscription(topic_t topic, std::list<std::string> publishers){
+        void sendSuscription(size_t value_hash, std::list<std::string> publishers){
 
-            if(publishers.size() == 0) printf("THERE NO ARE PUBLISHERS\n");
-            std::string message = getMessageSuscription(topic);
+            if(publishers.size() == 0){
+                printf("THERE NO ARE PUBLISHERS\n");
+                return;
+            }
+            printf("The hash of the topic for the subscription is %zu\n", value_hash);
+            std::string message__ = getMessageSuscription(value_hash);
+            printf("Message to send: -%s-\n", message__.c_str());
             for(iterator_string_t it = publishers.begin(); it != publishers.end(); it++){
-                //printf("it: %d addr: %s-\n",it, (*it).c_str() );
+                printf("it: %d addr: %s-\n",it, (*it).c_str() );
                 ip4_t ip(*it);
+                printf("IP: %s\nMessage: %s\nSize message: %lu\n",ip.to_string().c_str(), message__.c_str(), message__.size() );
 
-                this->sendto(ip, SUSCRIBER_PORT, message.c_str() , message.size());
+                //if(this == nullptr) printf("WHAT HAPPENED?? D:\n" );
+                this->sendto(ip, SUSCRIBER_PORT, message__.c_str() , message__.size());
 
             }
 
@@ -180,6 +187,7 @@ namespace octopus{
                         }
 
                         it->addrs_publisher.push_back(addr);
+                        if(it->suscribed) sendSuscription(value_hash, it->addrs_publisher);
                         return true;
                     }
                 }
@@ -199,7 +207,6 @@ namespace octopus{
 
 
     public:
-        SuscriberServer(){}
 
         SuscriberServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
 
@@ -223,7 +230,7 @@ namespace octopus{
                 for(iterator_publishers_t it = publishers_list.begin(); it != publishers_list.end(); it++  ){
 
                     if(it->hash_of_topic == value_hash){
-                        sendSuscription(topic, it->addrs_publisher);
+                        sendSuscription(doHash(topic), it->addrs_publisher);
                         it->suscribed = true;
                         printf("OK\n");
                         return true;
@@ -333,7 +340,7 @@ namespace octopus{
     private:
 
         topic_list_t created_topics;
-        typedef struct parameters_to_timer{
+        struct parameters_to_timer{
             topic_t topic;
             UDPsocket_t* socket;
         };

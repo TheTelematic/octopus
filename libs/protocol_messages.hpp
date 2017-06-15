@@ -36,10 +36,14 @@
 #include "utils.hpp"
 #include "udp.hpp"
 
+// My protobuf message
+//#include "../protobuf/topic.pb.h"
+
+
 namespace octopus{
 
-    typedef struct REQUEST_t{
-        char *type;
+    struct REQUEST_t{
+        std::string type;
         size_t hash_of_topic;
         topic_message_t message;
     };
@@ -53,7 +57,7 @@ namespace octopus{
 
 
 
-    REQUEST_t processPublication(std::string addr, std::string message_received){
+    REQUEST_t processPublication(std::string message_received){
 
         std::vector<std::string> v = split(message_received, SEPARATOR);
 
@@ -134,17 +138,20 @@ namespace octopus{
 
     }
 
-    REQUEST_t processSuscription(std::string addr,std::string message_received){
+    REQUEST_t processSuscription(std::string message_received){
         std::vector<std::string> v = split(message_received, SEPARATOR);
 
         if(v[0] == SUSCRIBE_TO_TOPIC){
 
             if(v.size() != 2) printf("----------###/---------ERROR IN PROTOCOL------------###/-----\n");
-
+            printf("Message received: %s\n", message_received.c_str());
             topic_t topic = v[1];
             topic.substr(1);
 
-            size_t value_hash = doHash(topic);
+            std::stringstream sstream(topic);
+
+            size_t value_hash;
+            sstream >> value_hash;
 
             printf("Suscription of topic %s (%zu)\n",topic.c_str(), value_hash );
 
@@ -193,15 +200,41 @@ namespace octopus{
         message += SEPARATOR;
         message += topic;
 
+        /*
+        GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+        GenericTopic tmp;
+
+        std::string result;
+        if(tmp.IsInitialized()){
+            tmp.set_msg(message);
+
+
+            tmp.SerializeToString(&result);
+
+            google::protobuf::ShutdownProtobufLibrary();
+        }
+
+        return result;
+        */
+
         return message;
+
+
     }
 
 
-    std::string getMessageSuscription(topic_t topic){
+    std::string getMessageSuscription(size_t value_hash){
         std::string message = "";
         message += SUSCRIBE_TO_TOPIC;
         message += SEPARATOR;
-        message += topic;
+
+        char str[256] = "";
+
+        snprintf(str, sizeof(str), "%zu", value_hash);
+
+        std::string tmp(str);
+        message += tmp;
 
         return message;
     }
