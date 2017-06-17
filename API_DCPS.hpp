@@ -16,8 +16,21 @@
 
 namespace octopus{
     class octoPublisher : public virtual Publisher{
+    private:
+
+        static octopusAPI *octopus_api;
+
     public:
-        DataWriter          create_datawriter(std::string topic, DataWriterListener listener){
+
+        octoPublisher(octopusAPI *octopus_api){
+            this->octopus_api = octopus_api;
+        }
+
+
+        void          create_topic(std::string topic){
+
+            octopus_api->create_topic(topic);
+
 
         }
         int                 set_listener(PublisherListener listener){
@@ -49,6 +62,20 @@ namespace octopus{
         }
         DomainParticipant   get_participant(){
 
+        }
+    };
+
+    class octoApp {
+    private:
+        octoPublisher *publisher;
+
+    public:
+        octoApp (void (*publication_handler)(size_t value_hash, topic_message_t message)){
+            octopusAPI octo_api(publication_handler);
+            publisher = new octoPublisher(&octo_api);
+        }
+        virtual ~octoApp (){
+            //delete publisher;
         }
     };
 

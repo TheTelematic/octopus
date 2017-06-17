@@ -115,6 +115,8 @@ namespace octopus{
 
         publishers_list_t publishers_list;
 
+        void (*process_publication_handler)(size_t value_hash, topic_message_t message);
+
         int sizeTopic(topic_t topic){
             return topic.size();
         }
@@ -201,14 +203,18 @@ namespace octopus{
 
         void processMessage(size_t value_hash, topic_message_t message){
 
-            printf("-Publication processed-\n Message: %s\nTopic (hashed): %zu\n",message.c_str(), value_hash );
+            
+
+            process_publication_handler(value_hash, message);
 
         }
 
 
     public:
 
-        SuscriberServer(UDPsocket_t *socket) : GenericUDPServer(socket){}
+        SuscriberServer(UDPsocket_t *socket, void (*publication_handler)(size_t value_hash, topic_message_t message)) : GenericUDPServer(socket){
+            this->process_publication_handler = publication_handler;
+        }
 
         bool suscribe(topic_t topic){
             if( !octopus::networkConfigured ){

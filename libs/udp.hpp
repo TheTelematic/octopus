@@ -32,7 +32,7 @@ namespace octopus{
 
 
     public:
-        octoUDPserver () : octoNet(){
+        octoUDPserver (void (*publication_handler)(size_t value_hash, topic_message_t message)) : octoNet(){
 
             auto& tmp = this->inet->udp().bind(DISCOVER_PORT);
 
@@ -48,7 +48,7 @@ namespace octopus{
 
             auto& tmp3 = this->inet->udp().bind(SUSCRIBER_PORT);
 
-            suscriber = new SuscriberServer(&tmp3);
+            suscriber = new SuscriberServer(&tmp3, publication_handler);
             printf("Server listening on suscriber port %d \n", SUSCRIBER_PORT);
 
         }

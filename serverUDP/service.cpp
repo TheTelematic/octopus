@@ -41,6 +41,10 @@ extern "C" bool is_nan(double x) { return x != x; }
     MAIN FUNCTIONS
     -------------------------------------------
 */
+void publication_handler(size_t value_hash, topic_message_t message){
+    printf("-Publication processed-\n Message: %s\nTopic (hashed): %zu\n",message.c_str(), value_hash );
+}
+
 
 void Service::start(){
 
@@ -54,7 +58,7 @@ void Service::start(){
 void Service::ready(){
     cout << "THE SERVICE IS READY" << endl;
 
-    octopusAPI* api = new octopusAPI();
+    octopusAPI* api = new octopusAPI(&publication_handler);
 
 
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';

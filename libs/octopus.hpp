@@ -13,8 +13,8 @@ namespace octopus{
     class Octopus{
 
     public:
-        Octopus(){
-            octopus::__octoUDP_server = new octoUDPserver();
+        Octopus(void (*publication_handler)(size_t value_hash, topic_message_t message)){
+            octopus::__octoUDP_server = new octoUDPserver(publication_handler);
             octopus::__octoTCP_server = new octoTCPserver();
         }
 
