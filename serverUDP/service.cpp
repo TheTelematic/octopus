@@ -21,11 +21,21 @@
 
 //My libs
 #include "../octopusAPI.hpp"
-
+#include "../API_DCPS.hpp"
 
 using namespace std;
 using namespace octopus;
 
+extern "C" char *strpbrk(const char *s, const char *accept) {
+   const std::string temp(accept);
+   size_t len = strlen(s);
+   for (size_t idx = 0; idx < len; idx++) {
+     for (auto c : temp) if (s[idx] == c) return const_cast<char*>(&s[idx]);
+   }
+   return nullptr;
+}
+
+extern "C" bool is_nan(double x) { return x != x; }
 
 /*
     MAIN FUNCTIONS

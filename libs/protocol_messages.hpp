@@ -37,7 +37,7 @@
 #include "udp.hpp"
 
 // My protobuf message
-//#include "../protobuf/topic.pb.h"
+#include "../protobuf/topic.pb.h"
 
 
 namespace octopus{
@@ -55,11 +55,38 @@ namespace octopus{
 
     }
 
+    std::string serializeWithProtobuf(std::string message){
+        GenericTopic tmp;
+
+        std::string result;
+        if(tmp.IsInitialized()){
+            tmp.set_msg(message);
+
+
+            tmp.SerializeToString(&result);
+
+            //google::protobuf::ShutdownProtobufLibrary();
+        }
+
+        return result;
+    }
+
+
+    std::string deserializeWithProtobuf(std::string serialized_input){
+        GenericTopic topic;
+
+        topic.ParseFromString(serialized_input);
+
+        return topic.msg();
+    }
+
 
 
     REQUEST_t processPublication(std::string message_received){
 
-        std::vector<std::string> v = split(message_received, SEPARATOR);
+
+
+        std::vector<std::string> v = split(deserializeWithProtobuf(message_received), SEPARATOR);
 
         if(v[0] == TOPIC_IS_CREATED){
 
@@ -139,7 +166,7 @@ namespace octopus{
     }
 
     REQUEST_t processSuscription(std::string message_received){
-        std::vector<std::string> v = split(message_received, SEPARATOR);
+        std::vector<std::string> v = split(deserializeWithProtobuf(message_received), SEPARATOR);
 
         if(v[0] == SUSCRIBE_TO_TOPIC){
 
@@ -200,26 +227,7 @@ namespace octopus{
         message += SEPARATOR;
         message += topic;
 
-        /*
-        GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-        GenericTopic tmp;
-
-        std::string result;
-        if(tmp.IsInitialized()){
-            tmp.set_msg(message);
-
-
-            tmp.SerializeToString(&result);
-
-            google::protobuf::ShutdownProtobufLibrary();
-        }
-
-        return result;
-        */
-
-        return message;
-
+        return serializeWithProtobuf(message);
 
     }
 
@@ -236,7 +244,7 @@ namespace octopus{
         std::string tmp(str);
         message += tmp;
 
-        return message;
+        return serializeWithProtobuf(message);
     }
 
     std::string getMessagePublication(topic_t topic, topic_message_t message_){
@@ -247,7 +255,7 @@ namespace octopus{
         message += SEPARATOR;
         message += message_;
 
-        return message;
+        return serializeWithProtobuf(message);
     }
 
     std::string getMessageTopicRemoved(topic_t topic){
@@ -256,7 +264,7 @@ namespace octopus{
         message += SEPARATOR;
         message += topic;
 
-        return message;
+        return serializeWithProtobuf(message);
     }
 
 
@@ -266,7 +274,7 @@ namespace octopus{
         message += SEPARATOR;
         message += topic;
 
-        return message;
+        return serializeWithProtobuf(message);
     }
 }
 #endif
