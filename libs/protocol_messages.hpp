@@ -15,8 +15,8 @@
 #define TOPIC_IS_CREATED "0"
 #endif
 
-#ifndef SUSCRIBE_TO_TOPIC
-#define SUSCRIBE_TO_TOPIC "1"
+#ifndef SUBSCRIBE_TO_TOPIC
+#define SUBSCRIBE_TO_TOPIC "1"
 #endif
 
 
@@ -28,8 +28,12 @@
 #define TOPIC_IS_REMOVED "4"
 #endif
 
-#ifndef UNSUSCRIBE_TO_TOPIC
-#define UNSUSCRIBE_TO_TOPIC "5"
+#ifndef UNSUBSCRIBE_TO_TOPIC
+#define UNSUBSCRIBE_TO_TOPIC "5"
+#endif
+
+#ifndef STOP_SERVICE
+#define STOP_SERVICE "STOP_SERVICE"
 #endif
 
 #include "types.hpp"
@@ -168,7 +172,7 @@ namespace octopus{
     REQUEST_t processSuscription(std::string message_received){
         std::vector<std::string> v = split(deserializeWithProtobuf(message_received), SEPARATOR);
 
-        if(v[0] == SUSCRIBE_TO_TOPIC){
+        if(v[0] == SUBSCRIBE_TO_TOPIC){
 
             if(v.size() != 2) printf("----------###/---------ERROR IN PROTOCOL------------###/-----\n");
             printf("Message received: %s\n", message_received.c_str());
@@ -184,25 +188,30 @@ namespace octopus{
 
             REQUEST_t req;
 
-            req.type = SUSCRIBE_TO_TOPIC;
+            req.type = SUBSCRIBE_TO_TOPIC;
             req.hash_of_topic = value_hash;
 
             return req;
 
-        }else if(v[0] == UNSUSCRIBE_TO_TOPIC){
+        }else if(v[0] == UNSUBSCRIBE_TO_TOPIC){
 
             if(v.size() != 2) printf("----------###/---------ERROR IN PROTOCOL------------###/-----\n");
 
             topic_t topic = v[1];
             topic.substr(1);
 
-            size_t value_hash = doHash(topic);
+            std::stringstream sstream(topic);
+
+            size_t value_hash;
+            sstream >> value_hash;
+
+            //size_t value_hash = doHash(topic);
 
             printf("UNsuscription of topic %s (%zu)\n",topic.c_str(), value_hash );
 
             REQUEST_t req;
 
-            req.type = UNSUSCRIBE_TO_TOPIC;
+            req.type = UNSUBSCRIBE_TO_TOPIC;
             req.hash_of_topic = value_hash;
 
             return req;
@@ -234,7 +243,7 @@ namespace octopus{
 
     std::string getMessageSuscription(size_t value_hash){
         std::string message = "";
-        message += SUSCRIBE_TO_TOPIC;
+        message += SUBSCRIBE_TO_TOPIC;
         message += SEPARATOR;
 
         char str[256] = "";
@@ -270,9 +279,9 @@ namespace octopus{
 
     std::string getMessageUnsuscription(topic_t topic){
         std::string message = "";
-        message += UNSUSCRIBE_TO_TOPIC;
+        message += UNSUBSCRIBE_TO_TOPIC;
         message += SEPARATOR;
-        message += topic;
+        message += doHash(topic);
 
         return serializeWithProtobuf(message);
     }

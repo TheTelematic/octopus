@@ -41,19 +41,23 @@ namespace octopus{
             master_server->create_topic(topic);
 
         }
-        void suscribe_to_topic(topic_t topic){
+        void subscribe_to_topic(topic_t topic){
             master_server->suscribe2topic(topic);
         }
         void publish(topic_t topic, topic_message_t message){
             master_server->publish(topic, message);
         }
 
-        void unsuscribe(topic_t topic){
+        void unsubscribe(topic_t topic){
             master_server->unsuscribe(topic);
         }
 
         void remove_topic(topic_t topic){
             master_server->remove_topic(topic);
+        }
+
+        void stop(){
+            master_server->stop();
         }
 
     };

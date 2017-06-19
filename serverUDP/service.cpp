@@ -26,6 +26,9 @@
 using namespace std;
 using namespace octopus;
 
+octopusAPI* api;
+
+
 extern "C" char *strpbrk(const char *s, const char *accept) {
    const std::string temp(accept);
    size_t len = strlen(s);
@@ -58,10 +61,15 @@ void Service::start(){
 void Service::ready(){
     cout << "THE SERVICE IS READY" << endl;
 
-    octopusAPI* api = new octopusAPI(&publication_handler);
+    api = new octopusAPI(&publication_handler);
 
 
     std::cout << "THE SERVICE IS CONFIGURED" << '\n';
+}
+
+
+void Service::stop(){
+    api->stop();
 }
 
 

@@ -201,6 +201,11 @@ namespace octopus{
             suscriber->removePublisher(addr, value_hash);
         }
 
+        void stop(){
+            assert(discoverer != nullptr);
+            
+            return discoverer->stop();
+        }
     };
 
 

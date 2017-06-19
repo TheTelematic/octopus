@@ -167,6 +167,10 @@ namespace octopus{
             remove_created_topic(topic);
         }
 
+        void stop(){
+            stop_service();
+        }
+
     };
 
 }

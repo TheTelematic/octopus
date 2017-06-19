@@ -105,7 +105,17 @@ namespace octopus{
         }
 
 
+        void stop(){
 
+            std::string buffer = STOP_SERVICE;
+
+            ip4_t myIP = this->getLocalAddr();
+            buffer += myIP.to_string();
+
+            printf("Sending STOP_SERVICE message ... (%s)\n", buffer.c_str());
+
+            this->sendto(BROADCAST_ADDRESS, DISCOVER_PORT, buffer.c_str(), buffer.size());
+        }
 
     };
 
@@ -203,7 +213,7 @@ namespace octopus{
 
         void processMessage(size_t value_hash, topic_message_t message){
 
-            
+
 
             process_publication_handler(value_hash, message);
 

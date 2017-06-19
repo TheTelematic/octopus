@@ -8,7 +8,7 @@
 
 namespace octopus{
 
-    static bool new_server = false; // Not quite elegant, but it can work
+    static bool update_table_servers_on_network = false; // Not quite elegant, but it can work
     static bool update_topics = false;
     static octoUDPserver* __octoUDP_server;
 
@@ -51,7 +51,12 @@ namespace octopus{
         return server->addServerAddr(addr);
     }
 
+    void removeAddrServer(std::string addr){
+        auto &server = octopus::__octoUDP_server;
+        assert(server != nullptr);
 
+        return server->removeServerAddr(addr);
+    }
 
     void showIpAddr(ds_addrs_t ip){
 
@@ -74,16 +79,26 @@ namespace octopus{
 
             std::string strdata(data,len);
 
+            if(strdata.substr(0, strlen(STOP_SERVICE)) == STOP_SERVICE){
+                std::string addr = strdata.substr(strlen(STOP_SERVICE));
+
+                printf("A server left the network -%s-\n", addr.c_str());
+
+                removeAddrServer(addr);
+                update_table_servers_on_network = true;
+                return;
+            }
+
             printf("Discovered new server in %s", strdata.c_str());
 
-            if(new_server){
+            if(update_table_servers_on_network){
                 if(addAddrServer(strdata)){
                     announceServer();
                     //suscribe_to_topic(KEEPALIVE_TOPIC);
                 }
             }else{
-                new_server = addAddrServer(strdata);
-                if(new_server){
+                update_table_servers_on_network = addAddrServer(strdata);
+                if(update_table_servers_on_network){
                     announceServer();
                     //suscribe_to_topic(KEEPALIVE_TOPIC);
                 }
@@ -102,9 +117,9 @@ namespace octopus{
             std::string strdata(data,len);
 
             REQUEST_t req = processSuscription(strdata);
-            if(req.type == SUSCRIBE_TO_TOPIC){
+            if(req.type == SUBSCRIBE_TO_TOPIC){
                 addSuscription(req.hash_of_topic);
-            }else if(req.type == UNSUSCRIBE_TO_TOPIC){
+            }else if(req.type == UNSUBSCRIBE_TO_TOPIC){
                 removeSuscription(req.hash_of_topic);
             }
             else printf("Process of suscription failed\n");
@@ -194,7 +209,7 @@ namespace octopus{
 
     void showTable(){
 
-        if (new_server) {
+        if (update_table_servers_on_network) {
             auto &server = octopus::__octoUDP_server;
             assert(server != nullptr);
             discovered_servers_t list_of_addresses = server->getServerAddresses();
@@ -209,7 +224,7 @@ namespace octopus{
             }
             std::cout << "--------------------" << '\n';
 
-            new_server = false;
+            update_table_servers_on_network = false;
         }
 
     }
@@ -322,7 +337,7 @@ namespace octopus{
             createTopic(topic);
 
             return 0;
-        }else if(parameters[0] == SUSCRIBE){
+        }else if(parameters[0] == SUBSCRIBE){
             if(parameters.size() != 2){
                 return -2;
             }
@@ -347,7 +362,7 @@ namespace octopus{
 
             return 0;
 
-        }else if(parameters[0] == UNSUSCRIBE){
+        }else if(parameters[0] == UNSUBSCRIBE){
             if(parameters.size() != 2){
                 return -2;
             }
@@ -395,6 +410,14 @@ namespace octopus{
         printf("REQUEST PROCESSED\n");
 
         client->write("> ");
+    }
+
+
+    void stop_service(){
+        auto &server = octopus::__octoUDP_server;
+        assert(server != nullptr);
+
+        server->stop();
     }
 }
 
