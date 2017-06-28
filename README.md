@@ -1,5 +1,5 @@
 # octopus
-My end-of-degree project, a system based on microservices. Running microservers and launch new of them when the system is colapsed.
+My end-of-degree project, a system based on microservices.  Running clone instances, they communicate to each other with protocol of publication/subscription and using the library of Google Protocol Buffers
 
 
 Notes:
