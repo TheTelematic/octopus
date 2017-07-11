@@ -281,7 +281,12 @@ namespace octopus{
         std::string message = "";
         message += UNSUBSCRIBE_TO_TOPIC;
         message += SEPARATOR;
-        message += doHash(topic);
+        char str[256] = "";
+
+        snprintf(str, sizeof(str), "%zu", doHash(topic));
+
+        std::string tmp(str);
+        message += tmp;
 
         return serializeWithProtobuf(message);
     }
